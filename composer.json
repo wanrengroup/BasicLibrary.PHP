@@ -1,0 +1,38 @@
+{
+  "name": "wanren/basiclibrary.php",
+  "description": "WRJT's php basic library.",
+  "homepage": "https://www.wanren.com/",
+  "keywords": [
+    "php",
+    "basic library",
+    "codecs"
+  ],
+  "type": "string",
+  "license": "Apache-2.0",
+  "require": {
+    "php": "^8.0",
+    "ext-mbstring": "*",
+    "topthink/think-orm": "^3.0",
+    "symfony/options-resolver": "^5.4",
+    "phpoffice/phpspreadsheet": "^4.0",
+    "ext-json": "*",
+    "ext-libxml": "*",
+    "ext-simplexml": "*",
+    "ext-bcmath": "*",
+    "ext-iconv": "*",
+    "ext-gd": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "9.*",
+    "roave/security-advisories": "dev-latest"
+  },
+  "autoload": {
+    "psr-4": {
+      "Wanren\\Test\\": "tests",
+      "Wanren\\": "src"
+    },
+    "files": [
+      "src/Common/functions.php"
+    ]
+  }
+}
