@@ -1,7 +1,5 @@
 # 说明
 
-# 说明
-
 1. 本项目是对PHP常用函数、类、扩展的封装，方便开发者使用。
 2. 本项目已自动关联到PHP包管理仓库Packagist（https://packagist.org/ ），可以直接通过composer安装和更新。
 
