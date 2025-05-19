@@ -10,14 +10,15 @@
 
 namespace Wanren\LogicLayer;
 
+use Closure;
+use think\Collection;
 use think\db\BaseQuery;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use think\Model;
-use think\Collection;
 use think\facade\Db;
-use utils\LoggerHelper;
+use think\Model;
+use Wanren\IO\LoggerHelper;
 
 /**
  * 抽象逻辑层基类
@@ -38,8 +39,9 @@ use utils\LoggerHelper;
  * 2.1->字符串类型：'id=1 and name="张三"'。
  * 2.2->一维数组类型：['id' => 1, 'name' => '张三']。
  * 2.3->索引多维数组类型：[['id','=',5],['name','like','%大%']]。
- * 2.4->OR关联多维数组类型：["or1"=>['id','=',5],'or2'=>['name','like','%大%']]
- * 2.5->复杂的OR条件查询：["or1"=>[['id','=',5],['name','like','%小%']],'or2'=>[['id','=',6],['name','like','%大%']]]
+ * 2.4->复杂的索引多维数组类型：[[['id','=',5],['name','like','小%']],[['grade','=',5],['name','like','%小']]] （最高level的各个元素生成condition的会自动加括号。）
+ * 2.5->OR关联多维数组类型：["or1"=>['id','=',5],'or2'=>['name','like','%大%']]
+ * 2.6->复杂的OR条件查询：["or1"=>[['id','=',5],['name','like','%小%']],'or2'=>[['id','=',6],['name','like','%大%']]]
  * 其生成的sql的where子句为：WHERE ( `id` = 5 AND `name` LIKE '%小%' ) OR ( `id` = 6 AND `name` LIKE '%大%' )
  *
  */
@@ -53,22 +55,22 @@ abstract class AbstractLogic
     /**
      * 构造函数，主要作用是实例化模型对象，传入的选填的参数为(不带前缀的)数据库表名或模型对象。
      * 创建模型对象时：如果派生类的类名称，可以跟数据库表对应，就可以省略传入表名。
-     * @param bool|string|Model $modelOrIsolatedMode 数据库表名或模型对象；如果使用默认的数据库表名，此参数也可以传入true，则使用隔离模式（此时自动忽略第二个参数）。
+     * @param bool|string|Model $modelInfoOrIsolatedMode 数据库表名或模型对象；如果使用默认的数据库表名，此参数也可以传入true，则使用隔离模式（此时自动忽略第二个参数）。
      * @param bool $useIsolatedModeInOperations 是否在连续多次地动作中使用独立的模型状态。默认为false，即多次使用同一个logic实例会共享查询状态。
      * （共享模式下，前次动作对模型的操作会影响到下次的动作。比如：
      * 连续getEntity多次的时候，如果没有使用隔离模式，ThinkORM会在第后一次调用时where条件的时候叠加上前一次的where条件；让开发者感觉“莫名其妙”。
      * 因此这个时候就需要使用隔离模式。）
      * =>特别注意：如果创建了一个logic实例，多次调用的时候，也可以粗放地将此参数设置为true，这样使用隔离的模式，每次调用logic都是“全新”的。
      */
-    public function __construct(bool|string|Model $modelOrIsolatedMode = "", bool $useIsolatedModeInOperations = false)
+    public function __construct(bool|string|Model $modelInfoOrIsolatedMode = "", bool $useIsolatedModeInOperations = false)
     {
-        if (is_bool($modelOrIsolatedMode)) {
-            $useIsolatedModeInOperations = $modelOrIsolatedMode;
-            $modelOrIsolatedMode         = "";
+        if (is_bool($modelInfoOrIsolatedMode)) {
+            $useIsolatedModeInOperations = $modelInfoOrIsolatedMode;
+            $modelInfoOrIsolatedMode     = "";
         }
 
         $this->useIsolatedModeInOperations = $useIsolatedModeInOperations;
-        $this->setModelDetails($modelOrIsolatedMode);
+        $this->setModelDetails($modelInfoOrIsolatedMode);
     }
 
     /**
@@ -127,13 +129,13 @@ abstract class AbstractLogic
 
     /**
      * 获取单条数据
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @param string $orderBy
      * @param string $fields
      * @param bool $result_as_array 是否返回数组形式的结果
-     * @return array|mixed|null
+     * @return Model|BaseQuery|array|null
      */
-    public function getEntity(string|array $where = [], string $orderBy = "", string $fields = "", bool $result_as_array = true): mixed
+    public function getEntity(string|Closure|array $where = [], string $orderBy = "", string $fields = "", bool $result_as_array = true): Model|BaseQuery|array|null
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -198,39 +200,34 @@ abstract class AbstractLogic
 
     /**
      * 获取数据条数
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @param string $field
      * @return int|null
      */
-    public function getEntityCount(string|array $where = [], string $field = ""): ?int
+    public function getEntityCount(string|Closure|array $where = [], string $field = ""): ?int
     {
         if (empty($field)) {
             $field = "*";
         }
 
-        try {
-            if ($this->useIsolatedModeInOperations) {
-                $this->resetBaseQuery();
-            }
-
-            //return $this->baseQuery->where($where)->count($field);
-
-            $query = $this->baseQuery;
-            $query = $this->prepareWhere($query, $where);
-            return $query->count($field);
-        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-            LoggerHelper::error($e->getMessage());
-            return null;
+        if ($this->useIsolatedModeInOperations) {
+            $this->resetBaseQuery();
         }
+
+        //return $this->baseQuery->where($where)->count($field);
+
+        $query = $this->baseQuery;
+        $query = $this->prepareWhere($query, $where);
+        return $query->count($field);
     }
 
     /**
      * 获取数据合计值
      * @param string $field
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @return float
      */
-    public function getEntitySum(string $field = "", string|array $where = []): float
+    public function getEntitySum(string $field = "", string|Closure|array $where = []): float
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -246,10 +243,10 @@ abstract class AbstractLogic
     /**
      * 获取数据平均值
      * @param string $field
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @return float
      */
-    public function getEntityAvg(string $field, string|array $where = []): float
+    public function getEntityAvg(string $field, string|Closure|array $where = []): float
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -265,10 +262,10 @@ abstract class AbstractLogic
     /**
      * 获取数据最大值
      * @param string $field
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @return float
      */
-    public function getEntityMax(string $field, string|array $where = []): float
+    public function getEntityMax(string $field, string|Closure|array $where = []): float
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -284,10 +281,10 @@ abstract class AbstractLogic
     /**
      * 获取数据最小值
      * @param string $field
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @return float
      */
-    public function getEntityMin(string $field, string|array $where = []): float
+    public function getEntityMin(string $field, string|Closure|array $where = []): float
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -302,52 +299,50 @@ abstract class AbstractLogic
 
     /**
      * 获取数据列表
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @param string $limit
      * @param string $orderBy
      * @param string $fields
      * @param bool $result_as_array 是否返回数组形式的结果
      * @return array|Collection|null
      */
-    public function getEntities(string|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", bool $result_as_array = true): array|Collection|null
+    public function getEntities(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", bool $result_as_array = true): array|Collection|null
     {
         $this->prepareParams($where, $limit, $orderBy, $fields);
 
         //3-> 获取数据
-        try {
-            if ($this->useIsolatedModeInOperations) {
-                $this->resetBaseQuery();
-            }
 
-            $query  = $this->baseQuery->field($fields)->order($orderBy)->limit($limit);
-            $query  = $this->prepareWhere($query, $where);
-            $result = $query->select();
-
-            if ($result_as_array && $result instanceof Collection) {
-                return $result->toArray();
-            }
-
-            return $result;
-        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-            LoggerHelper::error($e->getMessage());
-            return null;
+        if ($this->useIsolatedModeInOperations) {
+            $this->resetBaseQuery();
         }
+
+        $query  = $this->baseQuery->field($fields)->order($orderBy)->limit($limit);
+        $query  = $this->prepareWhere($query, $where);
+        $result = $query->select();
+
+        if ($result_as_array && $result instanceof Collection) {
+            return $result->toArray();
+        }
+
+        return $result;
+
     }
 
 
     /**
      * 获取数据列表，并返回结构化结果
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @param string $limit
      * @param string $orderBy
      * @param string $fields
      * @return array 成功返回数组['code' => 0,'msg' => '获取成功', 'count' => $count, 'data' => $result], 失败返回数组['code' => 500,'msg' => '获取失败']
      */
-    public function getPagedEntitiesResult(string|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = ""): array
+    public function getPagedEntitiesResult(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = ""): array
     {
+        //1-> 整理参数
         $this->prepareParams($where, $limit, $orderBy, $fields);
 
-        //3-> 获取数据
+        //2-> 获取数据
         try {
             if ($this->useIsolatedModeInOperations) {
                 $this->resetBaseQuery();
@@ -492,10 +487,11 @@ abstract class AbstractLogic
     }
 
     /**
-     * @param string|array $where
+     * 删除数据
+     * @param string|Closure|array $where
      * @return int|bool 成功删除的条数; 失败返回false
      */
-    public function deleteEntities(string|array $where): int|bool
+    public function deleteEntities(string|Closure|array $where): int|bool
     {
         //为了防止误操作，这里不允许删除所有数据
         if (empty($where)) {
@@ -521,10 +517,10 @@ abstract class AbstractLogic
 
     /**
      * 删除数据，并返回结构化结果
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @return array 成功返回数组['code' => 0,'msg' => '删除成功', 'data' => $result], 失败返回数组['code' => 500,'msg' => '删除失败']
      */
-    public function deleteEntitiesResult(string|array $where): array
+    public function deleteEntitiesResult(string|Closure|array $where): array
     {
         $result = $this->deleteEntities($where);
         if ($result) {
@@ -537,13 +533,13 @@ abstract class AbstractLogic
 
     /**
      * 对参数进行预处理
-     * @param string|array $where
+     * @param string|Closure|array $where
      * @param mixed $limit
      * @param string $orderBy
      * @param string $field
      * @return void
      */
-    private function prepareParams(string|array &$where, mixed &$limit, string &$orderBy, string &$field): void
+    private function prepareParams(string|Closure|array &$where, mixed &$limit, string &$orderBy, string &$field): void
     {
         if (empty($limit)) {
             $limit = 0;
@@ -551,6 +547,11 @@ abstract class AbstractLogic
 
         // 如果where参数是字符串，则直接返回；否则，解析where参数
         if (is_string($where)) {
+            return;
+        }
+
+        // 如果where参数是Closure，则直接返回；否则，解析where参数
+        if ($where instanceof Closure) {
             return;
         }
 
@@ -612,13 +613,17 @@ abstract class AbstractLogic
     /**
      * 处理各种 Where条件
      * @param BaseQuery $query
-     * @param string|array $where 多维条件数组或字符串
+     * @param string|array|Closure $where 字符串、闭包或多维数组表示的过滤条件
      * @return BaseQuery
      */
-    private function prepareWhere(BaseQuery $query, string|array $where): BaseQuery
+    private function prepareWhere(BaseQuery $query, string|Closure|array $where): BaseQuery
     {
         if (is_string($where)) {
             return $query->whereRaw($where);
+        }
+
+        if ($where instanceof Closure) {
+            return $query->where($where);
         }
 
         if (!is_array($where)) {

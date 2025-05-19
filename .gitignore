@@ -1,2 +1,4 @@
 /vendor
 /.nogit.readme.md
+logs/
+/.phpunit.result.cache
