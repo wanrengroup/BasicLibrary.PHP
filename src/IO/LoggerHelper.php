@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\IO;
+namespace WanRen\IO;
 
 use JsonException;
 use Monolog\Logger;

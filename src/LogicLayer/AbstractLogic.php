@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\LogicLayer;
+namespace WanRen\LogicLayer;
 
 use Closure;
 use think\Collection;
@@ -18,7 +18,7 @@ use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use think\Model;
-use Wanren\IO\LoggerHelper;
+use WanRen\IO\LoggerHelper;
 
 /**
  * 抽象逻辑层基类

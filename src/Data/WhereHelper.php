@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Data;
+namespace WanRen\Data;
 
 //TODO:xiedali@2025/04/24 Or条件待实现
 use function PHPUnit\Framework\isNull;

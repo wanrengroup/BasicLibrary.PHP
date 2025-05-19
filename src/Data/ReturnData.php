@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Data;
+namespace WanRen\Data;
 
 /**
  * 返回数据类(用于返回json数据，格式为：array('code' => $code,'msg' => $msg, 'data' => $data))

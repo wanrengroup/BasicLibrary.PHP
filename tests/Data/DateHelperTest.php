@@ -8,11 +8,11 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Test\Data;
+namespace WanRen\Test\Data;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
-use Wanren\Data\DateHelper;
+use WanRen\Data\DateHelper;
 
 
 class DateHelperTest extends TestCase

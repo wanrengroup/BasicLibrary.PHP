@@ -29,8 +29,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Wanren\\Test\\": "tests",
-      "Wanren\\": "src"
+      "WanRen\\Test\\": "tests",
+      "WanRen\\": "src"
     },
     "files": [
       "src/Common/functions.php"

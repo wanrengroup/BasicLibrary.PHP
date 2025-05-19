@@ -8,9 +8,9 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Test\Basic;
+namespace WanRen\Test\Basic;
 
-use app\common\logic\GeneralLogic;
+use WanRen\LogicLayer\GeneralLogic;
 use PHPUnit\Framework\TestCase;
 
 class WhereClauseTest extends TestCase

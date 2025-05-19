@@ -1,6 +1,6 @@
 <?php
 
-namespace Wanren\Data;
+namespace WanRen\Data;
 class SnowFlake
 {
     const EPOCH = 1449928800000; //开始时间,固定一个小于当前时间的毫秒数

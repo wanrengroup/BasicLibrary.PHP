@@ -8,11 +8,11 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Test\Basic;
+namespace WanRen\Test\Basic;
 
 use PHPUnit\Framework\TestCase;
-use Wanren\LogicLayer\GeneralLogic;
-use Wanren\Data\RandHelper;
+use WanRen\LogicLayer\GeneralLogic;
+use WanRen\Data\RandHelper;
 
 // +--------------------------------------------------------------------------
 // |:TITLE:::::::| 使用说明

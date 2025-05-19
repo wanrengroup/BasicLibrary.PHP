@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Data;
+namespace WanRen\Data;
 
 /**
  * 实体数据辅助类

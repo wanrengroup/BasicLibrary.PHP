@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Data;
+namespace WanRen\Data;
 
 /**
  * 转换安全的 Json 辅助类

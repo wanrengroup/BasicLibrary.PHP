@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\LogicLayer;
+namespace WanRen\LogicLayer;
 
 use think\Model;
 

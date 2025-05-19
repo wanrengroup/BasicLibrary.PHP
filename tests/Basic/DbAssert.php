@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Wanren\Test\Basic;
+namespace WanRen\Test\Basic;
 
 use think\facade\Db;
 
