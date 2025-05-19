@@ -242,7 +242,7 @@ class AbstractLogicTest extends TestCase
         $listGotten = $this->_testUpdateMulti($logic);
 
         /**
-         * 如果使用非隔离模式，则会导致结果不准确。
+         * 如果使用非隔离模式，则会导致结果错误（虽然代码修改了，但数据库并没有更新）。
          */
         if ($listGotten && count($listGotten) >= 1) {
             $first  = $listGotten[0];
