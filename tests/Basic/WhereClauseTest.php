@@ -13,12 +13,25 @@ namespace WanRen\Test\Basic;
 use WanRen\LogicLayer\GeneralLogic;
 use PHPUnit\Framework\TestCase;
 
+// +--------------------------------------------------------------------------
+// |:TITLE:::::::| 使用说明
+// ---------------------------------------------------------------------------
+// |:DESCRIPTION:| 需要先配置数据库表，表结构为：`tests/.SQLs/m_abstract_logic_testing.sql`
+// +--------------------------------------------------------------------------
+
 class WhereClauseTest extends TestCase
 {
+    private static string $targetTable = "abstract_logic_testing";
+
+    private function getTargetTableWithPrefix(): string
+    {
+        return "m_" . self::$targetTable;
+    }
+
     protected function setUp(): void
     {
         DbAssert::initDb();
-        $this->logic = new GeneralLogic("no_publish_c", true);
+        $this->logic = new GeneralLogic(self::$targetTable, true);
     }
 
     private array $map1 = ['mobile', 'like', 'thinkphp%'];
@@ -33,7 +46,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp'";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp'";
         self::assertEquals($expect, $actual);
     }
 
@@ -44,7 +57,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  `mobile` LIKE 'thinkphp%' OR `name` LIKE '%thinkphp'";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  `mobile` LIKE 'thinkphp%' OR `name` LIKE '%thinkphp'";
         self::assertEquals($expect, $actual);
     }
 
@@ -54,7 +67,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  ( id=1 and grade=3 )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( id=1 and grade=3 )";
         self::assertEquals($expect, $actual);
     }
 
@@ -65,7 +78,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' )  AND ( `grade` = 3 AND `id` = 1 )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' )  AND ( `grade` = 3 AND `id` = 1 )";
         self::assertEquals($expect, $actual);
     }
 
@@ -76,7 +89,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) OR ( `grade` = 3 AND `id` = 1 )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) OR ( `grade` = 3 AND `id` = 1 )";
         self::assertEquals($expect, $actual);
     }
 
@@ -90,7 +103,7 @@ class WhereClauseTest extends TestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `m_no_publish_c` WHERE  (  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp' )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp' )";
         self::assertEquals($expect, $actual);
     }
 

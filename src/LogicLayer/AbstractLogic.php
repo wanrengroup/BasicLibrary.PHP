@@ -133,9 +133,9 @@ abstract class AbstractLogic
      * @param string $orderBy
      * @param string $fields
      * @param bool $result_as_array 是否返回数组形式的结果
-     * @return Model|BaseQuery|array|null
+     * @return array|mixed|null
      */
-    public function getEntity(string|Closure|array $where = [], string $orderBy = "", string $fields = "", bool $result_as_array = true): Model|BaseQuery|array|null
+    public function getEntity(string|Closure|array $where = [], string $orderBy = "", string $fields = "", bool $result_as_array = true): mixed
     {
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
@@ -210,15 +210,20 @@ abstract class AbstractLogic
             $field = "*";
         }
 
-        if ($this->useIsolatedModeInOperations) {
-            $this->resetBaseQuery();
+        try {
+            if ($this->useIsolatedModeInOperations) {
+                $this->resetBaseQuery();
+            }
+
+            //return $this->baseQuery->where($where)->count($field);
+
+            $query = $this->baseQuery;
+            $query = $this->prepareWhere($query, $where);
+            return $query->count($field);
+        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
+            LoggerHelper::error($e->getMessage());
+            return null;
         }
-
-        //return $this->baseQuery->where($where)->count($field);
-
-        $query = $this->baseQuery;
-        $query = $this->prepareWhere($query, $where);
-        return $query->count($field);
     }
 
     /**
@@ -311,21 +316,24 @@ abstract class AbstractLogic
         $this->prepareParams($where, $limit, $orderBy, $fields);
 
         //3-> 获取数据
+        try {
+            if ($this->useIsolatedModeInOperations) {
+                $this->resetBaseQuery();
+            }
 
-        if ($this->useIsolatedModeInOperations) {
-            $this->resetBaseQuery();
+            $query  = $this->baseQuery->field($fields)->order($orderBy)->limit($limit);
+            $query  = $this->prepareWhere($query, $where);
+            $result = $query->select();
+
+            if ($result_as_array && $result instanceof Collection) {
+                return $result->toArray();
+            }
+
+            return $result;
+        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
+            LoggerHelper::error($e->getMessage());
+            return null;
         }
-
-        $query  = $this->baseQuery->field($fields)->order($orderBy)->limit($limit);
-        $query  = $this->prepareWhere($query, $where);
-        $result = $query->select();
-
-        if ($result_as_array && $result instanceof Collection) {
-            return $result->toArray();
-        }
-
-        return $result;
-
     }
 
 
