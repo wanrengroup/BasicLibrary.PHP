@@ -18,6 +18,7 @@ use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use think\Model;
+use WanRen\Data\ArrayHelper;
 use WanRen\IO\LoggerHelper;
 
 /**
@@ -43,6 +44,13 @@ use WanRen\IO\LoggerHelper;
  * 2.5->OR关联多维数组类型：["or1"=>['id','=',5],'or2'=>['name','like','%大%']]
  * 2.6->复杂的OR条件查询：["or1"=>[['id','=',5],['name','like','%小%']],'or2'=>[['id','=',6],['name','like','%大%']]]
  * 其生成的sql的where子句为：WHERE ( `id` = 5 AND `name` LIKE '%小%' ) OR ( `id` = 6 AND `name` LIKE '%大%' )
+ *
+ * 3->【参数$where的特别说明】：
+ * 因为ThinkORM 从3.0.20到 3.0.21版本，对whereOr的支持有所改变：
+ * 3.1-> 版本3.0.20之前是：whereOr($where)：$where 会跟外部其他条件进行 OR 连接。
+ * 3.1-> 版本3.0.21之后是：whereOr($where)：$where 会跟外部其他条件进行 AND 连接，而$where内部各个子条件才进行 OR 连接。
+ * 因此为了避免混淆，遇到Or的情况，建议使用闭包或者拼写字符串的方式进行条件组合。
+ *
  *
  */
 abstract class AbstractLogic
@@ -649,9 +657,15 @@ abstract class AbstractLogic
                 $key = strtoupper($key);
 
                 if (str_starts_with($key, "OR")) {
-                    $query = $query->whereOr([$value]);
+                    if (ArrayHelper::getDimensionCount($value) === 1) {
+                        $value = [$value];
+                    }
+                    $query = $query->whereOr($value);
                 } else if (str_starts_with($key, "AND")) {
-                    $query = $query->where([$value]);
+                    if (ArrayHelper::getDimensionCount($value) === 1) {
+                        $value = [$value];
+                    }
+                    $query = $query->where($value);
                 } else {
                     // 如果是传递的数组为 ['id' => 2] 这种形式，则继续保留这种格式
                     $query = $query->where([$key => $value]);

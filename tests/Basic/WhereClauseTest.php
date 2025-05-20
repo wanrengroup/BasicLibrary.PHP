@@ -10,6 +10,7 @@
 
 namespace WanRen\Test\Basic;
 
+use WanRen\Environment\EnvHelper;
 use WanRen\LogicLayer\GeneralLogic;
 use PHPUnit\Framework\TestCase;
 
@@ -27,6 +28,12 @@ class WhereClauseTest extends TestCase
     {
         return "m_" . self::$targetTable;
     }
+
+    private function getThinkOrmVersion(): string
+    {
+        return EnvHelper::getVendorLibraryVersion("topthink/think-orm");;
+    }
+
 
     protected function setUp(): void
     {
@@ -47,17 +54,30 @@ class WhereClauseTest extends TestCase
 
         $actual = $this->logic->getLastSql();
         $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp'";
+
+        if (version_compare($this->getThinkOrmVersion(), "V3.0.21", ">=")) {
+            $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  `mobile` LIKE 'thinkphp%' )  AND (  `name` LIKE '%thinkphp' )";
+        }
+
         self::assertEquals($expect, $actual);
     }
 
     public function testConditionOr(): void
     {
-        $where[]     = $this->map1;
-        $where["or"] = $this->map2;
+        // +--------------------------------------------------------------------------
+        // |::说明·| WhereOr在3.0.20版本前连接外部用OR；3.0.21版本之后用AND连接外部条件。
+        // +--------------------------------------------------------------------------
+
+        $where["and"] = $this->map1;
+        $where["or"]  = $this->map2;
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
         $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  `mobile` LIKE 'thinkphp%' OR `name` LIKE '%thinkphp'";
+
+        if (version_compare($this->getThinkOrmVersion(), "V3.0.21", ">=")) {
+            $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  `mobile` LIKE 'thinkphp%' )  AND (  `name` LIKE '%thinkphp' )";
+        }
         self::assertEquals($expect, $actual);
     }
 
@@ -79,6 +99,11 @@ class WhereClauseTest extends TestCase
 
         $actual = $this->logic->getLastSql();
         $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' )  AND ( `grade` = 3 AND `id` = 1 )";
+
+        if (version_compare($this->getThinkOrmVersion(), "V3.0.21", ">=")) {
+            $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) )  AND (  ( `grade` = 3 AND `id` = 1 ) )";
+        }
+
         self::assertEquals($expect, $actual);
     }
 
@@ -90,6 +115,10 @@ class WhereClauseTest extends TestCase
 
         $actual = $this->logic->getLastSql();
         $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) OR ( `grade` = 3 AND `id` = 1 )";
+
+        if (version_compare($this->getThinkOrmVersion(), "V3.0.21", ">=")) {
+            $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) )  AND (  `grade` = 3  OR `id` = 1 )";
+        }
         self::assertEquals($expect, $actual);
     }
 
