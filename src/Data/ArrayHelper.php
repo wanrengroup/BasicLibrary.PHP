@@ -34,7 +34,7 @@ class ArrayHelper
         $depth = 0;
         foreach ($arr as $value) {
             if (is_array($value)) {
-                $depth = max($depth, getArrayDimensions($value));
+                $depth = max($depth, self::getDimensionCount($value));
             }
         }
         return $depth + 1;

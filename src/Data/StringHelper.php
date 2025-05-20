@@ -41,9 +41,7 @@ class StringHelper
     public static function isEndWith(string $wholeStringData, string ...$paddingStringData): bool
     {
         foreach ($paddingStringData as $padding) {
-            $paddingLength = strlen($padding);
-            $subString     = substr($wholeStringData, -$paddingLength);
-            if ($subString === $padding) {
+            if (str_ends_with($wholeStringData, $padding)) {
                 return true;
             }
         }
@@ -59,9 +57,7 @@ class StringHelper
     public static function isStartWith(string $wholeStringData, string ...$paddingStringData): bool
     {
         foreach ($paddingStringData as $padding) {
-            $paddingLength = strlen($padding);
-            $subString     = substr($wholeStringData, 0, $paddingLength);
-            if ($subString === $padding) {
+            if (str_starts_with($wholeStringData, $padding)) {
                 return true;
             }
         }
@@ -109,19 +105,18 @@ class StringHelper
      */
     public static function getPositions(string $wholeStringData, string $subStringData, bool $ignoreCaseSensitive = false): array
     {
-        $functionName = $ignoreCaseSensitive? "mb_stripos" : "mb_strpos";
+        $functionName = $ignoreCaseSensitive ? "mb_stripos" : "mb_strpos";
 
         $_search_pos = $functionName($wholeStringData, $subStringData);
 
         $_arr_positions = array();
         while ($_search_pos > -1) {
             $_arr_positions[] = $_search_pos;
-            $_search_pos = $functionName($wholeStringData, $subStringData, $_search_pos + 1);
+            $_search_pos      = $functionName($wholeStringData, $subStringData, $_search_pos + 1);
         }
 
         return $_arr_positions;
     }
-
 
 
 }
