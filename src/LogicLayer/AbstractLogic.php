@@ -19,6 +19,7 @@ use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use think\Model;
 use WanRen\Data\ArrayHelper;
+use WanRen\Data\StringHelper;
 use WanRen\IO\LoggerHelper;
 
 /**
@@ -33,16 +34,16 @@ use WanRen\IO\LoggerHelper;
  * 1.1->字符串类型：直接传入条件字符串即可。
  * 1.2->一维数组类型：['字段名1' => 值1, '字段名2' => 值2,...]。类似如下形式：['id' => 1, 'name' => '张三']。
  * 1.3->索引多维数组类型：[[字段名1,操作符（默认为=，可以省略）,待查询的值],[字段名2,操作符,待查询的值],...]。类似如下：[['id','=',5],['name','like','%大%'],...]
- * 1.4->关联多维数组类型，主要用在Or条件的查询中(目前也仅支持以or/OR开头的关键字)：["OR1"=>[字段名1,操作符（默认为=，可以省略）,待查询的值],"OR2"=>[字段名2,操作符,待查询的值],...]。
- *  当然，每个OR对应一个数组元素，可以是一维的， 也可以是多维的，比如：["OR1"=>[[字段名1,操作符,待查询的值],[字段名2,操作符,待查询的值]]。这样字段1和字段2的关系是AND，他们组合之后再跟其他条件进行OR。
+ * 1.4->关联多维数组类型，主要用在Or条件的查询中(目前也仅支持以__or__/__OR__ 开头的关键字)：["__or__1"=>[字段名1,操作符（默认为=，可以省略）,待查询的值],"__or__2"=>[字段名2,操作符,待查询的值],...]。
+ *  当然，每个OR对应一个数组元素，可以是一维的， 也可以是多维的，比如：["__or__1"=>[[字段名1,操作符,待查询的值],[字段名2,操作符,待查询的值]]。这样字段1和字段2的关系是AND，他们组合之后再跟其他条件进行OR。
  *
  * 2->参数$where的格式示例：
  * 2.1->字符串类型：'id=1 and name="张三"'。
  * 2.2->一维数组类型：['id' => 1, 'name' => '张三']。
  * 2.3->索引多维数组类型：[['id','=',5],['name','like','%大%']]。
  * 2.4->复杂的索引多维数组类型：[[['id','=',5],['name','like','小%']],[['grade','=',5],['name','like','%小']]] （最高level的各个元素生成condition的会自动加括号。）
- * 2.5->OR关联多维数组类型：["or1"=>['id','=',5],'or2'=>['name','like','%大%']]
- * 2.6->复杂的OR条件查询：["or1"=>[['id','=',5],['name','like','%小%']],'or2'=>[['id','=',6],['name','like','%大%']]]
+ * 2.5->OR关联多维数组类型：["__or__1"=>['id','=',5],'__or__2'=>['name','like','%大%']]
+ * 2.6->复杂的OR条件查询：["__or__1"=>[['id','=',5],['name','like','%小%']],'__or__2'=>[['id','=',6],['name','like','%大%']]]
  * 其生成的sql的where子句为：WHERE ( `id` = 5 AND `name` LIKE '%小%' ) OR ( `id` = 6 AND `name` LIKE '%大%' )
  *
  * 3->【参数$where的特别说明】：
@@ -656,12 +657,12 @@ abstract class AbstractLogic
             if (is_string($key)) {
                 $key = strtoupper($key);
 
-                if (str_starts_with($key, "OR")) {
+                if (StringHelper::isStartWith($key, "[[OR]]", "{{OR}}", "__OR__")) {
                     if (ArrayHelper::getDimensionCount($value) === 1) {
                         $value = [$value];
                     }
                     $query = $query->whereOr($value);
-                } else if (str_starts_with($key, "AND")) {
+                } else if (StringHelper::isStartWith($key, "[[AND]]", "{{AND}}", "__AND__")) {
                     if (ArrayHelper::getDimensionCount($value) === 1) {
                         $value = [$value];
                     }

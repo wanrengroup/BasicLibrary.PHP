@@ -26,11 +26,17 @@ class ArrayHelper
 
     /**
      * 获取数组的维度
-     * @param $arr
+     * @param array $arr
      * @return int
      */
-    public static function getDimensionCount($arr): int
+    public static function getDimensionCount(array $arr): int
     {
+        //如果不是数组，则维度为0
+        /** @noinspection all */
+        if (!is_array($arr)) {
+            return 0;
+        }
+
         $depth = 0;
         foreach ($arr as $value) {
             if (is_array($value)) {
