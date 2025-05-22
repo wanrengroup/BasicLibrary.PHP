@@ -675,6 +675,9 @@ abstract class AbstractLogic
             return $query;
         }
 
+        $conditionOrPrefix  = self::getConditionOrPrefix();
+        $conditionAndPrefix = self::getConditionAndPrefix();
+
         foreach ($where as $key => $value) {
             //1->如果是索引数组，则肯定多个条件全部为AND关系
             if (is_numeric($key)) {
@@ -685,12 +688,12 @@ abstract class AbstractLogic
             if (is_string($key)) {
                 $key = strtoupper($key);
 
-                if (StringHelper::isStartWith($key, "[[OR]]", "{{OR}}", "__OR__")) {
+                if (StringHelper::isStartWith($key, $conditionOrPrefix)) {
                     if (ArrayHelper::getDimensionCount($value) === 1) {
                         $value = [$value];
                     }
                     $query = $query->whereOr($value);
-                } else if (StringHelper::isStartWith($key, "[[AND]]", "{{AND}}", "__AND__")) {
+                } else if (StringHelper::isStartWith($key, $conditionAndPrefix)) {
                     if (ArrayHelper::getDimensionCount($value) === 1) {
                         $value = [$value];
                     }
