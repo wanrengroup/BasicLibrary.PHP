@@ -68,8 +68,8 @@ class WhereClauseTest extends TestCase
         // |::说明·| WhereOr在3.0.20版本前连接外部用OR；3.0.21版本之后用AND连接外部条件。
         // +--------------------------------------------------------------------------
 
-        $where["and"] = $this->map1;
-        $where["or"]  = $this->map2;
+        $where["__and__"] = $this->map1;
+        $where["__or__"]  = $this->map2;
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
@@ -110,7 +110,7 @@ class WhereClauseTest extends TestCase
     public function testConditionMultiDimensionArray2(): void
     {
         $where[]     = [$this->map1, $this->map2]; //会自动加括号
-        $where["or"] = [$this->map3, $this->map4]; //会自动加括号
+        $where["__or__"] = [$this->map3, $this->map4]; //会自动加括号
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();

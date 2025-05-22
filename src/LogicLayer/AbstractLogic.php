@@ -20,6 +20,7 @@ use think\facade\Db;
 use think\Model;
 use WanRen\Data\ArrayHelper;
 use WanRen\Data\StringHelper;
+use WanRen\Environment\ConfigHelper;
 use WanRen\IO\LoggerHelper;
 
 /**
@@ -34,7 +35,7 @@ use WanRen\IO\LoggerHelper;
  * 1.1->字符串类型：直接传入条件字符串即可。
  * 1.2->一维数组类型：['字段名1' => 值1, '字段名2' => 值2,...]。类似如下形式：['id' => 1, 'name' => '张三']。
  * 1.3->索引多维数组类型：[[字段名1,操作符（默认为=，可以省略）,待查询的值],[字段名2,操作符,待查询的值],...]。类似如下：[['id','=',5],['name','like','%大%'],...]
- * 1.4->关联多维数组类型，主要用在Or条件的查询中(目前也仅支持以__or__/__OR__ 开头的关键字)：["__or__1"=>[字段名1,操作符（默认为=，可以省略）,待查询的值],"__or__2"=>[字段名2,操作符,待查询的值],...]。
+ * 1.4->关联多维数组类型，主要用在Or条件的查询中(目前也仅支持以__or__/__OR__ 开头的关键字，可以在.env文件中通过参数`WHERE_CONDITION_OR_PREFIX`配置默认的前缀名称。)：["__or__1"=>[字段名1,操作符（默认为=，可以省略）,待查询的值],"__or__2"=>[字段名2,操作符,待查询的值],...]。
  *  当然，每个OR对应一个数组元素，可以是一维的， 也可以是多维的，比如：["__or__1"=>[[字段名1,操作符,待查询的值],[字段名2,操作符,待查询的值]]。这样字段1和字段2的关系是AND，他们组合之后再跟其他条件进行OR。
  *
  * 2->参数$where的格式示例：
@@ -61,6 +62,9 @@ abstract class AbstractLogic
 
     private BaseQuery $baseQuery;
 
+    private static string $conditionOrPrefix = "";
+    private static string $conditionAndPrefix = "";
+
     /**
      * 构造函数，主要作用是实例化模型对象，传入的选填的参数为(不带前缀的)数据库表名或模型对象。
      * 创建模型对象时：如果派生类的类名称，可以跟数据库表对应，就可以省略传入表名。
@@ -80,6 +84,30 @@ abstract class AbstractLogic
 
         $this->useIsolatedModeInOperations = $useIsolatedModeInOperations;
         $this->setModelDetails($modelInfoOrIsolatedMode);
+    }
+
+    /**
+     * 传递给Where条件的时候，如果是 OR 条件，可自定义的前缀，默认是 "__or__"。
+     * @return string
+     */
+    private static function getConditionOrPrefix(): string
+    {
+        if (empty(self::$conditionOrPrefix)) {
+            self::$conditionOrPrefix = ConfigHelper::getEnv("WHERE_CONDITION_OR_PREFIX", "__or__");
+        }
+        return self::$conditionOrPrefix;
+    }
+
+    /**
+     * 传递给Where条件的时候，如果是 AND 条件，可自定义的前缀，默认是 "__and__"。
+     * @return string
+     */
+    private static function getConditionAndPrefix(): string
+    {
+        if (empty(self::$conditionAndPrefix)) {
+            self::$conditionAndPrefix = ConfigHelper::getEnv("WHERE_CONDITION_AND_PREFIX", "__and__");
+        }
+        return self::$conditionAndPrefix;
     }
 
     /**

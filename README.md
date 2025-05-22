@@ -13,10 +13,12 @@ composer require wanren/basiclibrary.php
 
 ## 本项目更新的方式
 
-项目代码修改后，提交到`Gitee`后，`Packagist`会检测并自动更新（如果没有自动更新，就按照`.nogit.readme.md`
+项目代码修改后，提交到`Gitee`后，`Packagist`会检测并自动更新（如果没有自动更新，请按照`.nogit.readme.md`
 文件内的说明手动执行）。
 
 第三方项目使用以下命令即可获得最新版本的功能：`composer update wanren/basiclibrary.php`。
 
 ## 依赖库的版本说明
-- topthink/think-orm 目前版本为3.0.18。不支持版本3.0.34。
+- topthink/think-orm 对whereOr的支持，thinkORM在版本3.0.20和3.0.21之间发生了重大改变：
+  - 3.0.20之前的版本，whereOr内的条件跟whereOr外的条件是OR关系。
+  - 3.0.21之后的版本，whereOr内的条件跟whereOr外的条件是AND关系，whereOr内部各个子条件之间才使用OR关系。

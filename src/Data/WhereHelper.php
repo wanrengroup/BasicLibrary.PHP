@@ -10,8 +10,6 @@
 
 namespace WanRen\Data;
 
-//TODO:xiedali@2025/04/24 Or条件待实现
-use function PHPUnit\Framework\isNull;
 
 /**
  * Where条件构造器
