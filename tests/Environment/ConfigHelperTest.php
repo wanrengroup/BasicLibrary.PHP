@@ -36,8 +36,15 @@ class ConfigHelperTest extends TestCase
         $expect = null;
         self::assertEquals($expect, $actual);
 
-        $actual = ConfigHelper::getEnv("testing_nonexistent_key","default_value");
+        $actual = ConfigHelper::getEnv("testing_nonexistent_key", "default_value");
         $expect = "default_value";
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testGetEnv2(): void
+    {
+        $actual = ConfigHelper::getEnv("WHERE_CONDITION_OR_PREFIX");
+        $expect = "__or__";
         self::assertEquals($expect, $actual);
     }
 
