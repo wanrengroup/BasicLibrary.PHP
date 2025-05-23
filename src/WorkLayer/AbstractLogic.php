@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace WanRen\LogicLayer;
+namespace WanRen\WorkLayer;
 
 use Closure;
 use think\Collection;

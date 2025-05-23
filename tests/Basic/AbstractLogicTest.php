@@ -11,7 +11,7 @@
 namespace WanRen\Test\Basic;
 
 use PHPUnit\Framework\TestCase;
-use WanRen\LogicLayer\GeneralLogic;
+use WanRen\WorkLayer\GeneralLogic;
 use WanRen\Data\RandHelper;
 
 // +--------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 namespace WanRen\Test\Basic;
 
 use WanRen\Environment\EnvHelper;
-use WanRen\LogicLayer\GeneralLogic;
+use WanRen\WorkLayer\GeneralLogic;
 use PHPUnit\Framework\TestCase;
 
 // +--------------------------------------------------------------------------

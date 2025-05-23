@@ -109,8 +109,8 @@ class WhereHelper
     }
 
     /**
-     * 查询字符串集合类型的字段中是否包含指定的字符串。
-     * 比如，一个字段存储了字符串集合，如："apple,banana,orange,pear"，则可以使用该方法查询是否包含"banana"。
+     * 查询字符串表示的集合的字段中是否包含指定的子字符串项目。
+     * 比如，一个字段存储了字符串表示的水果集合，如："apple,banana,orange,pear"，则可以使用该方法查询是否包含"banana"。
      * @param string $fieldName
      * @param string $item
      * @param string $separator 各个子字符串之间的分隔符，缺省为","
