@@ -22,12 +22,12 @@ class GeneralLogic extends AbstractLogic
 {
     /**
      * 构造函数
-     * @param bool|string|Model $modelInfoOrIsolatedMode
+     * @param string|Model $modelInfo
      * @param bool $useIsolatedModeInOperations
      */
-    public function __construct(bool|string|Model $modelInfoOrIsolatedMode, bool $useIsolatedModeInOperations = false)
+    public function __construct(string|Model $modelInfo, bool $useIsolatedModeInOperations = false)
     {
-        parent::__construct($modelInfoOrIsolatedMode, $useIsolatedModeInOperations);
+        parent::__construct($modelInfo, $useIsolatedModeInOperations);
     }
 
 

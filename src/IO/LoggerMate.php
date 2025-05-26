@@ -12,30 +12,31 @@ namespace WanRen\IO;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\AbstractLogger;
+use Stringable;
 
 
-class LoggerMate
+class LoggerMate extends AbstractLogger
 {
-    private Logger $log;
+    private Logger $logger;
 
-    public function __construct(string $log_file_basename = "")
+    public function __construct(string $channel_name = "", string $log_file_basename = "")
     {
         if (empty($log_file_basename)) {
             $log_file_basename = date('Y-m-d');
         }
 
         // 创建日志记录器
-        $this->log = new Logger('');
+        $this->logger = new Logger($channel_name);
 
         // 添加日志处理器
-        $this->log->pushHandler(new StreamHandler("logs/local-$log_file_basename.log", Logger::INFO));
+        $this->logger->pushHandler(new StreamHandler("logs/local-$log_file_basename.log", Logger::DEBUG));
     }
 
-    public function save(string $message, int $level = Logger::INFO): void
+
+    public function log($level, Stringable|string $message, array $context = []): void
     {
         // 具体记录日志
-        $this->log->addRecord($level, $message);
+        $this->logger->addRecord($level, $message, $context);
     }
-
-
 }

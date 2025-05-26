@@ -183,15 +183,13 @@ abstract class AbstractLogic
             $query  = $this->prepareWhere($query, $where);
             $result = $query->find();
 
-            //$result = $this->baseQuery->where($where)->order($orderBy)->field($fields)->find();
-
             if ($result_as_array && $result instanceof Model) {
                 return $result->toArray();
             }
 
             return $result;
         } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-            LoggerHelper::error($e->getMessage());
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return null;
         }
     }
@@ -247,20 +245,13 @@ abstract class AbstractLogic
             $field = "*";
         }
 
-        try {
-            if ($this->useIsolatedModeInOperations) {
-                $this->resetBaseQuery();
-            }
-
-            //return $this->baseQuery->where($where)->count($field);
-
-            $query = $this->baseQuery;
-            $query = $this->prepareWhere($query, $where);
-            return $query->count($field);
-        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-            LoggerHelper::error($e->getMessage());
-            return null;
+        if ($this->useIsolatedModeInOperations) {
+            $this->resetBaseQuery();
         }
+
+        $query = $this->baseQuery;
+        $query = $this->prepareWhere($query, $where);
+        return $query->count($field);
     }
 
     /**
@@ -274,8 +265,6 @@ abstract class AbstractLogic
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
         }
-
-        //return $this->baseQuery->where($where)->sum($field);
 
         $query = $this->baseQuery;
         $query = $this->prepareWhere($query, $where);
@@ -294,8 +283,6 @@ abstract class AbstractLogic
             $this->resetBaseQuery();
         }
 
-        //return $this->baseQuery->where($where)->avg($field);
-
         $query = $this->baseQuery;
         $query = $this->prepareWhere($query, $where);
         return $query->avg($field);
@@ -313,8 +300,6 @@ abstract class AbstractLogic
             $this->resetBaseQuery();
         }
 
-        //return $this->baseQuery->where($where)->max($field);
-
         $query = $this->baseQuery;
         $query = $this->prepareWhere($query, $where);
         return $query->max($field);
@@ -331,8 +316,6 @@ abstract class AbstractLogic
         if ($this->useIsolatedModeInOperations) {
             $this->resetBaseQuery();
         }
-
-        //return $this->baseQuery->where($where)->min($field);
 
         $query = $this->baseQuery;
         $query = $this->prepareWhere($query, $where);
@@ -368,7 +351,7 @@ abstract class AbstractLogic
 
             return $result;
         } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-            LoggerHelper::error($e->getMessage());
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return null;
         }
     }
@@ -393,8 +376,6 @@ abstract class AbstractLogic
                 $this->resetBaseQuery();
             }
 
-            //$list = $this->baseQuery->field($fields)->order($orderBy)->where($where)->paginate($limit)->toArray();
-
             $query = $this->baseQuery->field($fields)->order($orderBy);
             $query = $this->prepareWhere($query, $where);
             $list  = $query->paginate($limit)->toArray();
@@ -406,7 +387,7 @@ abstract class AbstractLogic
                 'data' => $list['data']
             ];
         } catch (DataNotFoundException|ModelNotFoundException|DbException  $e) {
-            LoggerHelper::error($e->getMessage());
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
 
             return [
                 'code' => 500,
@@ -446,7 +427,7 @@ abstract class AbstractLogic
 
             return $this->baseQuery->update($data);
         } catch (DbException $e) {
-            LoggerHelper::error($e->getMessage());
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return false;
         }
     }
@@ -548,13 +529,11 @@ abstract class AbstractLogic
                 $this->resetBaseQuery();
             }
 
-            //return $this->baseQuery->where($where)->delete();
-
             $query = $this->baseQuery;
             $query = $this->prepareWhere($query, $where);
             return $query->delete();
         } catch (DbException $e) {
-            LoggerHelper::error($e->getMessage());
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return false;
         }
     }

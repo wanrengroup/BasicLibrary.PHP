@@ -23,7 +23,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    private static function store(int $logLevel, mixed ...$messages): void
+    private static function log(int $logLevel, mixed ...$messages): void
     {
         if (self::$loggerMate === null) {
             self::$loggerMate = new LoggerMate();
@@ -38,7 +38,7 @@ class LoggerHelper
                 }
             }
 
-            self::$loggerMate->save($message, $logLevel);
+            self::$loggerMate->log($logLevel, $message);
         }
     }
 
@@ -49,7 +49,7 @@ class LoggerHelper
      */
     public static function debug(mixed ...$messages): void
     {
-        self::store(Logger::DEBUG, $messages);
+        self::log(Logger::DEBUG, $messages);
     }
 
 
@@ -60,7 +60,7 @@ class LoggerHelper
      */
     public static function info(mixed ...$messages): void
     {
-        self::store(Logger::INFO, $messages);
+        self::log(Logger::INFO, $messages);
     }
 
     /**
@@ -71,7 +71,7 @@ class LoggerHelper
      */
     public static function save(mixed ...$messages): void
     {
-        self::info($messages);
+        self::log(Logger::INFO, $messages);
     }
 
     /**
@@ -81,7 +81,7 @@ class LoggerHelper
      */
     public static function error(mixed ...$messages): void
     {
-        self::store(Logger::ERROR, $messages);
+        self::log(Logger::ERROR, $messages);
     }
 
 
