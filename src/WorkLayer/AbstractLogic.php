@@ -625,12 +625,20 @@ abstract class AbstractLogic
             unset($where['fields']);
         }
 
-        if (isset($where['page'])) {
-            unset($where['page']);
+        //排除掉一些非业务的过滤条件，比如page、only_refresh_time等。这些条件请通过.env中的用逗号分隔的字符串WHERE_CONDITION_IGNORE_NAMES配置。
+        //如果在.env的WHERE_CONDITION_IGNORE_NAMES中包含了"__no_default__"的话，则不会有默认的忽略条件。
+        $ignoreWhereConditionNames = ConfigHelper::getEnv("WHERE_CONDITION_IGNORE_NAMES", "");
+        if (is_string($ignoreWhereConditionNames)) {
+            $ignoreWhereConditionNames = explode(",", $ignoreWhereConditionNames);
+        }
+        if (!in_array("__no_default__", $ignoreWhereConditionNames, true)) {
+            $ignoreWhereConditionNames = array_merge($ignoreWhereConditionNames, ['page', 'only_refresh_time']);
         }
 
-        if (isset($where['only_refresh_time'])) {
-            unset($where['only_refresh_time']);
+        foreach ($ignoreWhereConditionNames as $item) {
+            if (isset($where[$item])) {
+                unset($where[$item]);
+            }
         }
     }
 

@@ -12,8 +12,9 @@ namespace WanRen\Test\Manual;
 
 require "../../vendor/autoload.php";
 
-use WanRen\Data\StringHelper;
 use WanRen\IO\LoggerHelper;
+use WanRen\Test\Basic\DbAssert;
+use WanRen\WorkLayer\GeneralLogic;
 
 
 class LoggerHelperTest
@@ -24,8 +25,18 @@ class LoggerHelperTest
         LoggerHelper::save($info, "aa");
     }
 
+    public function testAbstractLogicException(): void
+    {
+        DbAssert::initDb();
+        $logic = new GeneralLogic("abstract_logic_testing");
+
+        $where[] = ["love_status", "=", 1];
+        $logic->getEntity($where);
+    }
+
 
 }
 
 $test = new LoggerHelperTest();
-$test->testSave();
+//$test->testSave();
+$test->testAbstractLogicException();
