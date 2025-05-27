@@ -109,7 +109,7 @@ class WhereClauseTest extends TestCase
 
     public function testConditionMultiDimensionArray2(): void
     {
-        $where[]     = [$this->map1, $this->map2]; //会自动加括号
+        $where[]         = [$this->map1, $this->map2]; //会自动加括号
         $where["__or__"] = [$this->map3, $this->map4]; //会自动加括号
         $this->logic->getEntities($where);
 
@@ -133,6 +133,34 @@ class WhereClauseTest extends TestCase
 
         $actual = $this->logic->getLastSql();
         $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp' )";
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testConditionIgnoreWhereConditionNames(): void
+    {
+        $where[] = $this->map1;
+        $where[] = $this->map2;
+        $where["password"] = "123456";
+
+        $options = [
+            "ignore_where_condition_names" => ["password"]
+        ];
+        $result = $this->logic->getEntities($where, "", "", "", $options);
+
+        print_r(PHP_EOL . "──结果为：───────────────────────────────────" . PHP_EOL);
+        if ($result) {
+            print_r("结果不为空");
+        } else {
+            print_r("结果为空");
+        }
+
+        $actual = $this->logic->getLastSql();
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  `mobile` LIKE 'thinkphp%'  AND `name` LIKE '%thinkphp'";
+
+        if (version_compare($this->getThinkOrmVersion(), "V3.0.21", ">=")) {
+            $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  (  `mobile` LIKE 'thinkphp%' )  AND (  `name` LIKE '%thinkphp' )";
+        }
+
         self::assertEquals($expect, $actual);
     }
 

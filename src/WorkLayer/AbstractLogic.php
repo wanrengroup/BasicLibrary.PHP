@@ -328,12 +328,19 @@ abstract class AbstractLogic
      * @param string $limit
      * @param string $orderBy
      * @param string $fields
-     * @param bool $result_as_array 是否返回数组形式的结果
+     * @param array $options 更多可选（不常用）的参数信息，包括：
+     * 1-> result_as_array: 是否返回数组形式的结果，默认为true。
+     * 2-> ignore_where_condition_names : 忽略的where条件字段名数组（即强制要求不参与where条件的字段名）。
+     * 如果包含了"__no_default__"这个特殊字符串的话，则不会添加默认的忽略条件。本属性只$where参数中的[$key=>$value]类型的元素有忽略作用。
+     * 3-> ...(其他可选参数)
      * @return array|Collection|null
      */
-    public function getEntities(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", bool $result_as_array = true): array|Collection|null
+    public function getEntities(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", array $options = []): array|Collection|null
     {
-        $this->prepareParams($where, $limit, $orderBy, $fields);
+        $result_as_array           = $options['result_as_array'] ?? true;
+        $ignoreWhereConditionNames = $options['ignore_where_condition_names'] ?? [];
+
+        $this->prepareParams($where, $ignoreWhereConditionNames, $limit, $orderBy, $fields);
 
         //3-> 获取数据
         try {
@@ -363,12 +370,18 @@ abstract class AbstractLogic
      * @param string $limit
      * @param string $orderBy
      * @param string $fields
+     * @param array $options 更多可选（不常用）的参数信息，包括：
+     * * 1-> ignore_where_condition_names : 忽略的where条件字段名数组（即强制要求不参与where条件的字段名）。
+     * 如果包含了"__no_default__"这个特殊字符串的话，则不会添加默认的忽略条件。本属性只$where参数中的[$key=>$value]类型的元素有忽略作用。
+     * * 2-> ...(其他可选参数)
      * @return array 成功返回数组['code' => 0,'msg' => '获取成功', 'count' => $count, 'data' => $result], 失败返回数组['code' => 500,'msg' => '获取失败']
      */
-    public function getPagedEntitiesResult(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = ""): array
+    public function getPagedEntitiesResult(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", array $options = []): array
     {
+        $ignoreWhereConditionNames = $options['ignore_where_condition_names'] ?? [];
+
         //1-> 整理参数
-        $this->prepareParams($where, $limit, $orderBy, $fields);
+        $this->prepareParams($where, $ignoreWhereConditionNames, $limit, $orderBy, $fields);
 
         //2-> 获取数据
         try {
@@ -558,12 +571,13 @@ abstract class AbstractLogic
     /**
      * 对参数进行预处理
      * @param string|Closure|array $where
+     * @param array $ignoreWhereConditionNames
      * @param mixed $limit
      * @param string $orderBy
      * @param string $field
      * @return void
      */
-    private function prepareParams(string|Closure|array &$where, mixed &$limit, string &$orderBy, string &$field): void
+    private function prepareParams(string|Closure|array &$where, array $ignoreWhereConditionNames, mixed &$limit, string &$orderBy, string &$field): void
     {
         if (empty($limit)) {
             $limit = 0;
@@ -625,12 +639,8 @@ abstract class AbstractLogic
             unset($where['fields']);
         }
 
-        //排除掉一些非业务的过滤条件，比如page、only_refresh_time等。这些条件请通过.env中的用逗号分隔的字符串WHERE_CONDITION_IGNORE_NAMES配置。
-        //如果在.env的WHERE_CONDITION_IGNORE_NAMES中包含了"__no_default__"的话，则不会有默认的忽略条件。
-        $ignoreWhereConditionNames = ConfigHelper::getEnv("WHERE_CONDITION_IGNORE_NAMES", "");
-        if (is_string($ignoreWhereConditionNames)) {
-            $ignoreWhereConditionNames = explode(",", $ignoreWhereConditionNames);
-        }
+        //排除掉一些非业务的过滤条件，比如page、only_refresh_time等。
+        //如果包含了"__no_default__"这个特殊字符串的话，则不会有默认的忽略条件。
         if (!in_array("__no_default__", $ignoreWhereConditionNames, true)) {
             $ignoreWhereConditionNames = array_merge($ignoreWhereConditionNames, ['page', 'only_refresh_time']);
         }

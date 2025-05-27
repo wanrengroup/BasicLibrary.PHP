@@ -20,15 +20,15 @@ class ConfigHelperTest extends TestCase
 {
     public function testGetEnv(): void
     {
-        $actual = ConfigHelper::getEnv("testing_string");
+        $actual = ConfigHelper::getEnv("TESTING_STRING");
         $expect = "china";
         self::assertEquals($expect, $actual);
 
-        $actual = ConfigHelper::getEnv("testing_number");
+        $actual = ConfigHelper::getEnv("TESTING_NUMBER");
         $expect = 123;
         self::assertEquals($expect, $actual);
 
-        $actual = ConfigHelper::getEnv("testing_array");
+        $actual = ConfigHelper::getEnv("TESTING_ARRAY");
         $expect = "[1,2,3,4,5]";
         self::assertEquals($expect, $actual);
 

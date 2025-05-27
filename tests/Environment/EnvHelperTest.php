@@ -21,8 +21,8 @@ class EnvHelperTest extends TestCase
     {
         $actual = EnvHelper::getPhysicalRootPath();
 
-        // 每次测试时，请到根目录下的.env文件中修改real_physical_root_path的值为实际的物理根目录
-        $expect = ConfigHelper::getEnv('real_physical_root_path');
+        // 每次测试时，请到根目录下的.env文件中修改 REAL_PHYSICAL_ROOT_PATH 的值为实际的物理根目录
+        $expect = ConfigHelper::getEnv('REAL_PHYSICAL_ROOT_PATH');
         self::assertEquals($expect, $actual);
     }
 
@@ -30,8 +30,8 @@ class EnvHelperTest extends TestCase
     {
         $actual = EnvHelper::getVendorLibraryVersion("topthink/think-orm");
 
-        // 每次测试时，请到根目录下的.env文件中修改real_think_orm_version的值为实际的ORM版本号
-        $expect = ConfigHelper::getEnv('real_think_orm_version', '');
+        // 每次测试时，请到根目录下的.env文件中修改 REAL_THINK_ORM_VERSION 的值为实际的ORM版本号
+        $expect = ConfigHelper::getEnv('REAL_THINK_ORM_VERSION', '');
         self::assertEquals($expect, $actual);
     }
 
