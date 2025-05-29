@@ -15,7 +15,13 @@ use Exception;
 
 class DateHelper
 {
-    public static function timestamp2string($timestamp = 0, string $format = "Y-m-d H:i:s"): string
+    /**
+     * 时间戳转日期字符串
+     * @param int $timestamp
+     * @param string $format
+     * @return string
+     */
+    public static function timestamp2string(int $timestamp = 0, string $format = "Y-m-d H:i:s"): string
     {
         if ($timestamp === 0) {
             return "";
@@ -24,7 +30,12 @@ class DateHelper
         return date($format, $timestamp);
     }
 
-    public static function string2timestamp($dateString = ""): int
+    /**
+     * 日期字符串转时间戳
+     * @param string $dateString
+     * @return int
+     */
+    public static function string2timestamp(string $dateString = ""): int
     {
         if (empty($dateString)) {
             return 0;
@@ -34,21 +45,39 @@ class DateHelper
         return $date_object->getTimestamp();
     }
 
-    public static function addDays($dateValue, int $days): DateTime
+    /**
+     * 在给定的日期的基础上加上指定添加的天数
+     * @param mixed $dateValue 日期值，可以是时间戳、日期字符串、DateTime对象
+     * @param int $days
+     * @return DateTime
+     */
+    public static function addDays(mixed $dateValue, int $days): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$days days");
         return $date_object;
     }
 
-    public static function addMonths($dateValue, int $months): DateTime
+    /**
+     * 在给定的日期的基础上加上指定添加的月数
+     * @param mixed $dateValue 日期值，可以是时间戳、日期字符串、DateTime对象
+     * @param int $months
+     * @return DateTime
+     */
+    public static function addMonths(mixed $dateValue, int $months): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$months months");
         return $date_object;
     }
 
-    public static function addYears($dateValue, int $years): DateTime
+    /**
+     * 在给定的日期的基础上加上指定添加的年数
+     * @param mixed $dateValue 日期值，可以是时间戳、日期字符串、DateTime对象
+     * @param int $years
+     * @return DateTime
+     */
+    public static function addYears(mixed $dateValue, int $years): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$years years");
@@ -87,8 +116,8 @@ class DateHelper
 
     /**
      * 格式化日期字符串
-     * @param mixed $dateValue
-     * @param string $format
+     * @param mixed $dateValue 日期值，可以是时间戳、日期字符串、DateTime对象
+     * @param string $format 日期格式，默认为 "Y-m-d H:i:s"
      * @return string
      */
     public static function format(mixed $dateValue = "", string $format = "Y-m-d H:i:s"): string
