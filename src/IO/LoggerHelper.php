@@ -12,6 +12,7 @@ namespace WanRen\IO;
 
 use JsonException;
 use Monolog\Logger;
+use WanRen\Environment\ConfigHelper;
 
 class LoggerHelper
 {
@@ -26,7 +27,12 @@ class LoggerHelper
     private static function log(int $logLevel, mixed ...$messages): void
     {
         if (self::$loggerMate === null) {
-            self::$loggerMate = new LoggerMate();
+            // 这里可以根据需要自定义日志配置
+            $logDirName      = ConfigHelper::getEnv('LOG_DIR_NAME', '');
+            $logFileBaseName = ConfigHelper::getEnv('LOG_FILE_BASE_NAME', '');
+            $logChannelName  = ConfigHelper::getEnv('LOG_CHANNEL_NAME', '');
+
+            self::$loggerMate = new LoggerMate($logChannelName, $logFileBaseName, $logDirName);
         }
 
         foreach ($messages as $message) {

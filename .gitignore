@@ -2,3 +2,4 @@
 /.nogit.readme.md
 logs/
 /.phpunit.result.cache
+/tests/.Manual/my_logs/

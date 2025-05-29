@@ -38,5 +38,5 @@ class LoggerHelperTest
 }
 
 $test = new LoggerHelperTest();
-//$test->testSave();
-$test->testAbstractLogicException();
+$test->testSave();
+//$test->testAbstractLogicException();

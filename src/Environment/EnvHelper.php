@@ -3,6 +3,7 @@
 namespace WanRen\Environment;
 
 
+use Composer\InstalledVersions;
 use WanRen\Data\JsonHelper;
 use WanRen\Data\StringHelper;
 
@@ -15,30 +16,34 @@ class EnvHelper
      * 获取Vendor中某个库的版本号
      * @param string $libraryName 第三方库的名称
      * @return string 版本号
+     *
      */
     public static function getVendorLibraryVersion(string $libraryName): string
     {
-        //获取项目的根目录
-        $rootPath = self::getPhysicalRootPath();
+        ////获取项目的根目录
+        //$rootPath = self::getPhysicalRootPath();
+        //
+        //// 获取 Composer 的已安装包信息
+        //$lockFileFullName = $rootPath . DIRECTORY_SEPARATOR . 'composer.lock';
+        //if (!file_exists($lockFileFullName)) {
+        //    return '';
+        //}
+        //
+        //$lockFileContents = file_get_contents($lockFileFullName);
+        //$lockFileObject   = JsonHelper::string2Array($lockFileContents);
+        //
+        //// 查找 ThinkORM等第三方库 的版本
+        //foreach ($lockFileObject['packages'] as $package) {
+        //    if ($package['name'] === $libraryName) {
+        //        return $package['version'];
+        //    }
+        //}
+        //
+        ////如果遍历完了还没有找到，说明该库没有安装，返回空字符串
+        //return '';
 
-        // 获取 Composer 的已安装包信息
-        $lockFileFullName = $rootPath . DIRECTORY_SEPARATOR . 'composer.lock';
-        if (!file_exists($lockFileFullName)) {
-            return '';
-        }
-
-        $lockFileContents = file_get_contents($lockFileFullName);
-        $lockFileObject   = JsonHelper::string2Array($lockFileContents);
-
-        // 查找 ThinkORM等第三方库 的版本
-        foreach ($lockFileObject['packages'] as $package) {
-            if ($package['name'] === $libraryName) {
-                return $package['version'];
-            }
-        }
-
-        //如果遍历完了还没有找到，说明该库没有安装，返回空字符串
-        return '';
+        //Composer在文件InstalledVersions.php中，有提供获取已安装包信息的API，可以直接调用
+        return InstalledVersions::getPrettyVersion($libraryName);
     }
 
     /**
