@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Data;
+namespace WanRen\Test\Data;
 
 use PHPUnit\Framework\TestCase;
 use WanRen\Data\StringHelper;

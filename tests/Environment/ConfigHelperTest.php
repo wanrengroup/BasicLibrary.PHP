@@ -8,7 +8,7 @@
  * @company: Less is more.Simple is best!
  */
 
-namespace Environment;
+namespace WanRen\Test\Environment;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;

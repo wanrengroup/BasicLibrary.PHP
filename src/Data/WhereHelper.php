@@ -31,9 +31,9 @@ class WhereHelper
         return array($fieldName, ">", $value);
     }
 
-    public static function GreaterThanOrEqual(string $fieldName, $value): array
+    public static function NotGreaterThan(string $fieldName, $value): array
     {
-        return array($fieldName, ">=", $value);
+        return array($fieldName, "<=", $value);
     }
 
     public static function LessThan(string $fieldName, $value): array
@@ -41,10 +41,12 @@ class WhereHelper
         return array($fieldName, "<", $value);
     }
 
-    public static function LessThanOrEqual(string $fieldName, $value): array
+    public static function NotLessThan(string $fieldName, $value): array
     {
-        return array($fieldName, "<=", $value);
+        return array($fieldName, ">=", $value);
     }
+
+
 
     /**
      *
@@ -72,16 +74,16 @@ class WhereHelper
      *
      * @param string $fieldName
      * @param string $value
-     * @param $align_position string 字符串$value跟目标字符串的对齐关系。取值为："left"|"right"|"middle"，缺省值为"middle"
+     * @param $alignPosition string 字符串$value跟目标字符串的对齐关系。取值为："left"|"right"|"all"，缺省值为"all"
      * @return array
      */
-    public static function Like(string $fieldName, string $value, string $align_position = "middle"): array
+    public static function Like(string $fieldName, string $value, string $alignPosition = "all"): array
     {
-        if ($align_position == "left") {
+        if ($alignPosition == "left") {
             $value .= "%";
-        } elseif ($align_position == "right") {
+        } elseif ($alignPosition == "right") {
             $value = "%" . $value;
-        } elseif ($align_position == "middle") {
+        } elseif ($alignPosition == "all") {
             $value = "%" . $value . "%";
         }
 
@@ -92,16 +94,16 @@ class WhereHelper
      *
      * @param string $fieldName
      * @param string $value
-     * @param $align_position string 字符串$value跟目标字符串的对齐关系。取值为："left"|"right"|"middle"，缺省值为"middle"
+     * @param $align_position string 字符串$value跟目标字符串的对齐关系。取值为："left"|"right"|"all"，缺省值为"all"
      * @return array
      */
-    public static function NotLike(string $fieldName, string $value, string $align_position = "middle"): array
+    public static function NotLike(string $fieldName, string $value, string $align_position = "all"): array
     {
         if ($align_position == "left") {
             $value .= "%";
         } elseif ($align_position == "right") {
             $value = "%" . $value;
-        } elseif ($align_position == "middle") {
+        } elseif ($align_position == "all") {
             $value = "%" . $value . "%";
         }
 
