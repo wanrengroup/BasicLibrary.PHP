@@ -116,14 +116,14 @@ class WhereHelper
      * @param string $fieldName
      * @param string $item
      * @param string $separator 各个子字符串之间的分隔符，缺省为","
-     * @return array where条件的二维数组，这个数组要交给ThinkORM的 whereOr() 方法使用
+     * @return array where条件的二维数组，这个数组要交给ThinkORM的 whereOr() 方法使用；或者 给AbstractLogic层的$where["__or__"]数组使用
      */
     public static function LikeAtStringCollection(string $fieldName, string $item, string $separator = ","): array
     {
         $whereOr   = [];
-        $whereOr[] = [$fieldName, 'like', $item . $separator . '%'];
-        $whereOr[] = [$fieldName, 'like', '%' . $separator . $item . $separator . '%'];
-        $whereOr[] = [$fieldName, 'like', '%' . $separator . $item];
+        $whereOr[] = [$fieldName, 'LIKE', $item . $separator . '%'];
+        $whereOr[] = [$fieldName, 'LIKE', '%' . $separator . $item . $separator . '%'];
+        $whereOr[] = [$fieldName, 'LIKE', '%' . $separator . $item];
         $whereOr[] = [$fieldName, '=', $item];
 
         return $whereOr;

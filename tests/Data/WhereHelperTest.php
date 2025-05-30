@@ -32,6 +32,8 @@ class WhereHelperTest extends TestCase
     private function assertDetails(array $where, int $expectCount = 0): void
     {
         $actual = $this->logic->getEntityCount($where);
+        print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
+        print_r($this->logic->getLastSql());
         $expect = $expectCount;
         self::assertEquals($expect, $actual);
     }
@@ -76,6 +78,15 @@ class WhereHelperTest extends TestCase
 
         $where = WhereHelper::NotLike("alias", "张", "right");
         $this->assertDetails($where, 8);
+    }
+
+    public function testLikeAtStringCollection(): void
+    {
+        $where["__or__"] = WhereHelper::LikeAtStringCollection("loves", "橘子", ",");
+        $this->assertDetails($where, 4);
+
+        $where["__or__"] = WhereHelper::LikeAtStringCollection("loves", "篮球", ";");
+        $this->assertDetails($where, 2);
     }
 
     public function testBetween(): void
