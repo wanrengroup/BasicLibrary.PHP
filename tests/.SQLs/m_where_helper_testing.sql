@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `m_where_helper_testing` (
   `mobile` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `create_date` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='本地测试，不用发布的表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='本地测试WhereHelper的表';
 
 -- 正在导出表  my_wr_basic_library.m_where_helper_testing 的数据：~0 rows (大约)
 DELETE FROM `m_where_helper_testing`;

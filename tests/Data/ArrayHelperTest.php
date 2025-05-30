@@ -16,6 +16,69 @@ use WanRen\Data\ArrayHelper;
 
 class ArrayHelperTest extends TestCase
 {
+    public function testGet(): void
+    {
+        $original = ['a' => 1, 'b' => 2, 'c' => 3];
+        $actual   = ArrayHelper::get($original, 'a');
+        $expect   = 1;
+        self::assertEquals($expect, $actual);
+
+        $actual = ArrayHelper::get($original, 'b', 30);
+        $expect = 2;
+        self::assertEquals($expect, $actual);
+
+        $actual = ArrayHelper::get($original, 'd', 30);
+        $expect = 30;
+        self::assertEquals($expect, $actual);
+
+        $original = [];
+        $actual   = ArrayHelper::get($original, 'a');
+        $expect   = null;
+        self::assertEquals($expect, $actual);
+
+        $original = [10, 20, 30];
+        $actual   = ArrayHelper::get($original, 2);
+        $expect   = 30;
+        self::assertEquals($expect, $actual);
+
+        $original = [10, 20];
+        $actual   = ArrayHelper::get($original, 3, 0);
+        $expect   = 0;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testGetDimensionCount(): void
+    {
+        $original = "hello world";
+        $actual   = ArrayHelper::getDimensionCount($original);
+        $expect   = 0;
+        self::assertEquals($expect, $actual);
+
+        $original = [];
+        $actual   = ArrayHelper::getDimensionCount($original);
+        $expect   = 1;
+        self::assertEquals($expect, $actual);
+
+        $original = [1, 2, 3];
+        $actual   = ArrayHelper::getDimensionCount($original);
+        self::assertEquals($expect, $actual);
+
+        $original = [1, 2, [3, 4, 5]];
+        $actual   = ArrayHelper::getDimensionCount($original);
+        $expect   = 2;
+        self::assertEquals($expect, $actual);
+
+        $original = [1, 2, [3, 4, [5, 6, 7]]];
+        $actual   = ArrayHelper::getDimensionCount($original);
+        $expect   = 3;
+        self::assertEquals($expect, $actual);
+
+        $original = ["a" => 1, "b" => 2, "c" => [3, 4, 5]];
+        $actual   = ArrayHelper::getDimensionCount($original);
+        $expect   = 2;
+        self::assertEquals($expect, $actual);
+    }
+
     public function testIsIndexArray(): void
     {
         //空数组, 索引数组

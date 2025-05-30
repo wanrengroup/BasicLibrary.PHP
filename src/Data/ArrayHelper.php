@@ -14,31 +14,42 @@ class ArrayHelper
 {
     /**
      * 安全获取数组成员的值
-     * @param $array
-     * @param $key
-     * @param $default
-     * @return mixed|null
+     * @param array $array 数组
+     * @param int|string $key 键名
+     * @param mixed $default 默认值
+     * @return mixed|null 返回数组成员的值，如果不存在则返回默认值
      */
-    public static function get($array, $key, $default = null): mixed
+    public static function get(array $array, int|string $key, mixed $default = null): mixed
     {
         return $array[$key] ?? $default;
     }
 
     /**
+     * 安全获取数组成员的值(get的别名)
+     * * @param array $array 数组
+     * * @param int|string $key 键名
+     * * @param mixed $default 默认值
+     * * @return mixed|null 返回数组成员的值，如果不存在则返回默认值
+ */
+    public static function getItem(array $array, int|string $key, mixed $default = null): mixed
+    {
+        return self::get($array, $key, $default);
+    }
+
+    /**
      * 获取数组的维度
-     * @param array $arr
+     * @param mixed $targetObject
      * @return int
      */
-    public static function getDimensionCount(array $arr): int
+    public static function getDimensionCount(mixed $targetObject): int
     {
         //如果不是数组，则维度为0
-        /** @noinspection all */
-        if (!is_array($arr)) {
+        if (!is_array($targetObject)) {
             return 0;
         }
 
         $depth = 0;
-        foreach ($arr as $value) {
+        foreach ($targetObject as $value) {
             if (is_array($value)) {
                 $depth = max($depth, self::getDimensionCount($value));
             }
