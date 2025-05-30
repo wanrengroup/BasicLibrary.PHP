@@ -672,6 +672,16 @@ abstract class AbstractLogic
             return $query;
         }
 
+        //处理比如 ['id', '=', 1]这种简单结构的一维数组
+        //判断标准：一维索引数组，并且数组第一个元素是字符串
+        if (ArrayHelper::getDimensionCount($where) === 1 &&
+            ArrayHelper::isIndex($where) &&
+            count($where) > 0 &&
+            gettype($where[0]) === 'string') {
+            $where = [$where];
+        }
+
+
         $conditionOrPrefix  = self::getConditionOrPrefix();
         $conditionAndPrefix = self::getConditionAndPrefix();
 
