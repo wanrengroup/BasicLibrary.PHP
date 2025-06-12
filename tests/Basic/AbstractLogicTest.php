@@ -512,6 +512,18 @@ class AbstractLogicTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
+    public function testAnotherDBConnection(): void
+    {
+        $options = ["connection" => "biz"];
+        $logic   = new GeneralLogic("student", true, $options);
+
+        $where[] = ["id", ">", 0];
+
+        $actual = $logic->getEntityCount($where);
+        $expect = 5;
+        self::assertEquals($expect, $actual);
+    }
+
     /**
      * 测试 WhereOr条件
      * @return void

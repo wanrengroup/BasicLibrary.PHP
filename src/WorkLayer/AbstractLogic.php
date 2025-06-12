@@ -68,6 +68,7 @@ abstract class AbstractLogic
     /**
      * 构造函数，主要作用是实例化模型对象，传入的选填的参数为(不带前缀的)数据库表名或模型对象。
      * 创建模型对象时：如果派生类的类名称，可以跟数据库表对应，就可以省略传入表名。
+     * @param string|array $connectionNameOrOptions 数据库连接名称或更多配置项（如果不传，则使用默认的数据库连接；如果传入字符串，则表示选用指定的数据库连接；如果传入数组，则表示配置项（在配置项中可以通过键名connectionName或connection指定数据库连接名称）
      * @param bool|string|Model $modelInfoOrIsolatedMode 数据库表名或模型对象；如果使用默认的数据库表名，此参数也可以传入true，则使用隔离模式（此时自动忽略第二个参数）。
      * @param bool $useIsolatedModeInOperations 是否在连续多次地动作中使用独立的模型状态。默认为false，即多次使用同一个logic实例会共享查询状态。
      * （共享模式下，前次动作对模型的操作会影响到下次的动作。比如：
@@ -75,7 +76,7 @@ abstract class AbstractLogic
      * 因此这个时候就需要使用隔离模式。）
      * =>特别注意：如果创建了一个logic实例，多次调用的时候，也可以粗放地将此参数设置为true，这样使用隔离的模式，每次调用logic都是“全新”的。
      */
-    public function __construct(bool|string|Model $modelInfoOrIsolatedMode = "", bool $useIsolatedModeInOperations = false)
+    public function __construct(bool|string|Model $modelInfoOrIsolatedMode = "", bool $useIsolatedModeInOperations = false, string|array $connectionNameOrOptions = "")
     {
         if (is_bool($modelInfoOrIsolatedMode)) {
             $useIsolatedModeInOperations = $modelInfoOrIsolatedMode;
@@ -83,7 +84,7 @@ abstract class AbstractLogic
         }
 
         $this->useIsolatedModeInOperations = $useIsolatedModeInOperations;
-        $this->setModelDetails($modelInfoOrIsolatedMode);
+        $this->setModelDetails($modelInfoOrIsolatedMode, $connectionNameOrOptions);
     }
 
     /**
@@ -123,10 +124,12 @@ abstract class AbstractLogic
      * 设置模型对象
      * (因为模型支持连贯操作，所以模型对象对历史条件具有记忆功能。因此，如果需要一个不含有历史条件的模型对象，可以重新实例化一个模型对象。)
      * @param mixed $modelOrModelName
+     * @param string|array $connectionNameOrOptions
      * @return void
      */
-    private function setModelDetails(mixed $modelOrModelName = ""): void
+    private function setModelDetails(mixed $modelOrModelName = "", string|array $connectionNameOrOptions = ""): void
     {
+        //1-> 确定模型对象的名字
         $modelName = "";
         if (is_string($modelOrModelName)) {
             $modelName = $modelOrModelName;
@@ -142,8 +145,26 @@ abstract class AbstractLogic
             $modelName   = $modelOrModelName->getName();
         }
 
-        /** @noinspection all */
-        $this->baseQuery = Db::name($modelName)->strict(false);
+
+        //2-> 确定数据库连接配置
+        $connection = "";
+        if (is_string($connectionNameOrOptions)) {
+            $connection = $connectionNameOrOptions;
+        }
+
+        if (is_array($connectionNameOrOptions)) {
+            //目前只支持从$options中获取数据库连接配置
+            $connection = $connectionNameOrOptions['connection'] ?? $connectionNameOrOptions['connectionName'] ?? '';
+        }
+
+        //3-> 创建查询对象
+        if ($connection) {
+            /** @noinspection all */
+            $this->baseQuery = Db::connect($connection)->name($modelName)->strict(false);
+        } else {
+            /** @noinspection all */
+            $this->baseQuery = Db::name($modelName)->strict(false);
+        }
     }
 
     /**

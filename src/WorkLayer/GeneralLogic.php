@@ -24,10 +24,11 @@ class GeneralLogic extends AbstractLogic
      * 构造函数
      * @param string|Model $modelInfo
      * @param bool $useIsolatedModeInOperations
+     * @param array $connectionNameOrOptions
      */
-    public function __construct(string|Model $modelInfo, bool $useIsolatedModeInOperations = false)
+    public function __construct(string|Model $modelInfo, bool $useIsolatedModeInOperations = false, array $connectionNameOrOptions = [])
     {
-        parent::__construct($modelInfo, $useIsolatedModeInOperations);
+        parent::__construct($modelInfo, $useIsolatedModeInOperations, $connectionNameOrOptions);
     }
 
 
