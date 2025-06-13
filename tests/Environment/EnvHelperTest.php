@@ -26,14 +26,14 @@ class EnvHelperTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
-    public function testGetVendorLibraryVersion(): void
-    {
-        $actual = EnvHelper::getVendorLibraryVersion("topthink/think-orm");
-
-        // 每次测试时，请到根目录下的.env文件中修改 REAL_THINK_ORM_VERSION 的值为实际的ORM版本号
-        $expect = ConfigHelper::getEnv('REAL_THINK_ORM_VERSION', '');
-        self::assertEquals($expect, $actual);
-    }
+    //public function testGetVendorLibraryVersion(): void
+    //{
+    //    $actual = EnvHelper::getVendorLibraryVersion("topthink/think-orm");
+    //
+    //    // 每次测试时，请到根目录下的.env文件中修改 REAL_THINK_ORM_VERSION 的值为实际的ORM版本号
+    //    $expect = ConfigHelper::getEnv('REAL_THINK_ORM_VERSION', '');
+    //    self::assertEquals($expect, $actual);
+    //}
 
 
 

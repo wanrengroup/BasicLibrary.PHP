@@ -20,7 +20,7 @@ class LoggerMate extends AbstractLogger
 {
     private Logger $logger;
 
-    public function __construct(string $channel_name = "", string $log_file_basename = "",string $log_file_dirname = "")
+    public function __construct(string $channel_name = "", string $log_file_basename = "", string $log_file_dirname = "")
     {
         if (empty($log_file_basename)) {
             $log_file_basename = date('Y-m-d');
@@ -35,7 +35,7 @@ class LoggerMate extends AbstractLogger
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $log_file_dirname));
         }
 
-        $log_file_full_path = $log_file_dirname. "/local-". $log_file_basename. ".log";
+        $log_file_full_path = $log_file_dirname . "/local-" . $log_file_basename . ".log";
 
         // 创建日志记录器
         $this->logger = new Logger($channel_name);
@@ -45,7 +45,7 @@ class LoggerMate extends AbstractLogger
     }
 
 
-    public function log($level, Stringable|string $message, array $context = []): void
+    public function log($level, $message, $context = []): void
     {
         // 具体记录日志
         $this->logger->addRecord($level, $message, $context);

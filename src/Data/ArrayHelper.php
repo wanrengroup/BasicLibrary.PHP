@@ -19,7 +19,7 @@ class ArrayHelper
      * @param mixed $default 默认值
      * @return mixed|null 返回数组成员的值，如果不存在则返回默认值
      */
-    public static function get(array $array, int|string $key, mixed $default = null): mixed
+    public static function get(array $array, $key, $default = null)
     {
         return $array[$key] ?? $default;
     }
@@ -30,8 +30,8 @@ class ArrayHelper
      * * @param int|string $key 键名
      * * @param mixed $default 默认值
      * * @return mixed|null 返回数组成员的值，如果不存在则返回默认值
- */
-    public static function getItem(array $array, int|string $key, mixed $default = null): mixed
+     */
+    public static function getItem(array $array, $key, $default = null)
     {
         return self::get($array, $key, $default);
     }
@@ -41,7 +41,7 @@ class ArrayHelper
      * @param mixed $targetObject
      * @return int
      */
-    public static function getDimensionCount(mixed $targetObject): int
+    public static function getDimensionCount($targetObject): int
     {
         //如果不是数组，则维度为0
         if (!is_array($targetObject)) {
@@ -72,7 +72,7 @@ class ArrayHelper
      * @param mixed $targetObject
      * @return bool
      */
-    public static function isAssoc(mixed $targetObject): bool
+    public static function isAssoc($targetObject): bool
     {
         $result = self::getArrayType($targetObject);
         return $result === 'ASS_ARRAY';
@@ -83,7 +83,7 @@ class ArrayHelper
      * @param mixed $targetObject
      * @return bool
      */
-    public static function isIndex(mixed $targetObject): bool
+    public static function isIndex($targetObject): bool
     {
         $result = self::getArrayType($targetObject);
         return $result === 'IND_ARRAY';
@@ -98,7 +98,7 @@ class ArrayHelper
      * @param mixed $targetObject 要检查的对象
      * @return string 返回 'IND_ARRAY'（索引数组）或 'ASS_ARRAY'（关联数组），否则返回 'NOT_ARRAY'
      */
-    public static function getArrayType(mixed $targetObject): string
+    public static function getArrayType($targetObject): string
     {
         if (!is_array($targetObject)) {
             return 'NOT_ARRAY';

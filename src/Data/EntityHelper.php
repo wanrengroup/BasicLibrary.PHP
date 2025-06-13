@@ -21,7 +21,7 @@ class EntityHelper
      * @param ...$fields string 字段名
      * @return array|mixed 格式化后的实体数据
      */
-    public static function FormatDate(mixed &$entity, string $format = '', ...$fields): mixed
+    public static function FormatDate( &$entity, string $format = '', ...$fields): mixed
     {
         if (empty($format)) {
             $format = 'Y-m-d';

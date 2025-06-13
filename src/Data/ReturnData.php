@@ -17,7 +17,7 @@ class ReturnData
 {
     public int $code = 0;
     public string $msg = '';
-    public mixed $data = null;
+    public $data = null;
 
     public function __construct($code = 0, $msg = 'success', $data = null)
     {

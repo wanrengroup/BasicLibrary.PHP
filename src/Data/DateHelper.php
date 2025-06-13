@@ -51,7 +51,7 @@ class DateHelper
      * @param int $days
      * @return DateTime
      */
-    public static function addDays(mixed $dateValue, int $days): DateTime
+    public static function addDays($dateValue, int $days): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$days days");
@@ -64,7 +64,7 @@ class DateHelper
      * @param int $months
      * @return DateTime
      */
-    public static function addMonths(mixed $dateValue, int $months): DateTime
+    public static function addMonths($dateValue, int $months): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$months months");
@@ -77,7 +77,7 @@ class DateHelper
      * @param int $years
      * @return DateTime
      */
-    public static function addYears(mixed $dateValue, int $years): DateTime
+    public static function addYears($dateValue, int $years): DateTime
     {
         $date_object = self::getDateTime($dateValue);
         $date_object->modify("+$years years");
@@ -89,7 +89,7 @@ class DateHelper
      * @param mixed $dateValue 日期值，可以是时间戳、日期字符串、DateTime对象
      * @return DateTime
      */
-    public static function getDateTime(mixed $dateValue = ""): DateTime
+    public static function getDateTime($dateValue = ""): DateTime
     {
         if (empty($dateValue)) {
             return new DateTime();
@@ -107,7 +107,7 @@ class DateHelper
 
         try {
             $date_object = new DateTime($dateValue);
-        } catch (Exception) {
+        } catch (Exception $e) {
             $date_object = new DateTime();
         }
 
@@ -120,7 +120,7 @@ class DateHelper
      * @param string $format 日期格式，默认为 "Y-m-d H:i:s"
      * @return string
      */
-    public static function format(mixed $dateValue = "", string $format = "Y-m-d H:i:s"): string
+    public static function format($dateValue = "", string $format = "Y-m-d H:i:s"): string
     {
         $date_object = self::getDateTime($dateValue);
         return $date_object->format($format);

@@ -54,7 +54,7 @@ class WhereHelper
      * @param array|string $values 数组或者用逗号分隔的字符串
      * @return array
      */
-    public static function In(string $fieldName, array|string $values): array
+    public static function In(string $fieldName,  $values): array
     {
         return array($fieldName, "IN", $values);
     }
@@ -65,7 +65,7 @@ class WhereHelper
      * @param array|string $values 数组或者用逗号分隔的字符串
      * @return array
      */
-    public static function NotIn(string $fieldName, array|string $values): array
+    public static function NotIn(string $fieldName,  $values): array
     {
         return array($fieldName, "NOT IN", $values);
     }
@@ -79,11 +79,11 @@ class WhereHelper
      */
     public static function Like(string $fieldName, string $value, string $alignPosition = "all"): array
     {
-        if ($alignPosition == "left") {
+        if ($alignPosition === "left") {
             $value .= "%";
-        } elseif ($alignPosition == "right") {
+        } elseif ($alignPosition === "right") {
             $value = "%" . $value;
-        } elseif ($alignPosition == "all") {
+        } elseif ($alignPosition === "all") {
             $value = "%" . $value . "%";
         }
 
@@ -99,11 +99,11 @@ class WhereHelper
      */
     public static function NotLike(string $fieldName, string $value, string $align_position = "all"): array
     {
-        if ($align_position == "left") {
+        if ($align_position === "left") {
             $value .= "%";
-        } elseif ($align_position == "right") {
+        } elseif ($align_position === "right") {
             $value = "%" . $value;
-        } elseif ($align_position == "all") {
+        } elseif ($align_position === "all") {
             $value = "%" . $value . "%";
         }
 

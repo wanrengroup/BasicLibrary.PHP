@@ -20,7 +20,7 @@ class NumberHelper
      * @param string    $thousandsSeparator 千分位分隔符(缺省为逗号",")
      * @return string
      */
-    public static function format(float|int $number, int $decimalLength = 0, string $decimalPoint = ".", string $thousandsSeparator = ","): string
+    public static function format($number, int $decimalLength = 0, string $decimalPoint = ".", string $thousandsSeparator = ","): string
     {
         return number_format($number, $decimalLength, $decimalPoint, $thousandsSeparator);
     }

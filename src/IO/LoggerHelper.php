@@ -24,7 +24,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    private static function log(int $logLevel, mixed ...$messages): void
+    private static function log(int $logLevel, ...$messages): void
     {
         if (self::$loggerMate === null) {
             // 这里可以根据需要自定义日志配置
@@ -53,7 +53,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    public static function debug(mixed ...$messages): void
+    public static function debug(...$messages): void
     {
         self::log(Logger::DEBUG, $messages);
     }
@@ -64,7 +64,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    public static function info(mixed ...$messages): void
+    public static function info(...$messages): void
     {
         self::log(Logger::INFO, $messages);
     }
@@ -75,7 +75,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    public static function save(mixed ...$messages): void
+    public static function save(...$messages): void
     {
         self::log(Logger::INFO, $messages);
     }
@@ -85,7 +85,7 @@ class LoggerHelper
      * @param mixed ...$messages
      * @return void
      */
-    public static function error(mixed ...$messages): void
+    public static function error(...$messages): void
     {
         self::log(Logger::ERROR, $messages);
     }

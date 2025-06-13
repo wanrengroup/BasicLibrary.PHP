@@ -6,22 +6,22 @@
  * @return array
  */
 if (!function_exists('returnStatus')) {
-    function returnStatus(bool|int $status, string $msg = '', array $data = []): array
+    function returnStatus($status, string $msg = '', array $data = []): array
     {
         if (is_bool($status)) {
             if ($status) {
                 return success($data, $msg);
-            } else {
-                return fail($msg, 500, $data);
             }
+
+            return fail($msg, 500, $data);
         }
 
         if (is_int($status)) {
             if ($status === 0) {
                 return success($data, $msg);
-            } else {
-                return fail($msg, $status, $data);
             }
+
+            return fail($msg, $status, $data);
         }
 
         return success($data, $msg);
@@ -35,7 +35,7 @@ if (!function_exists('returnStatus')) {
  * @return array
  */
 if (!function_exists('success')) {
-    function success(mixed $data = [], string $msg = '', int $code = 0): array
+    function success($data = [], string $msg = '', int $code = 0): array
     {
         return [
             'code' => $code,

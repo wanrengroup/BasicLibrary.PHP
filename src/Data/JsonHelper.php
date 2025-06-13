@@ -21,7 +21,7 @@ class JsonHelper
      * @param bool $retainChinese 是否保留中文等非 ASCII 字符，不转换成 unicode 编码。默认 true。
      * @return string|bool (如果转换失败，返回 false)
      */
-    public static function entity2String(object|array $entity, bool $retainChinese = true): string|bool
+    public static function entity2String( $entity, bool $retainChinese = true)
     {
         try {
             $flags = JSON_THROW_ON_ERROR;
@@ -41,7 +41,7 @@ class JsonHelper
      * @param string $jsonString
      * @return array|null (如果转换失败，返回 null)
      */
-    public static function string2Array(string $jsonString): array|null
+    public static function string2Array(string $jsonString)
     {
         try {
             return json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR);
@@ -56,7 +56,7 @@ class JsonHelper
      * @param string $jsonString
      * @return object|null (如果转换失败，返回 null)
      */
-    public static function string2Object(string $jsonString): object|null
+    public static function string2Object(string $jsonString)
     {
         try {
             return json_decode($jsonString, false, 512, JSON_THROW_ON_ERROR);

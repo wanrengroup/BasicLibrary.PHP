@@ -10,10 +10,8 @@
   "type": "string",
   "license": "Apache-2.0",
   "require": {
-    "php": "^8.0",
+    "php": "^7.4.0",
     "ext-mbstring": "*",
-    "topthink/think-orm": ">=3.0.0",
-    "symfony/options-resolver": "^5.4",
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
