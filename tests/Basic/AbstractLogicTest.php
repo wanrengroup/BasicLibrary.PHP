@@ -30,7 +30,7 @@ class AbstractLogicTest extends TestCase
      * @param GeneralLogic $logic
      * @return void
      */
-    public function _testUpdate(GeneralLogic $logic): void
+    private function _testUpdate(GeneralLogic $logic): void
     {
         $mobile = RandHelper::generateRandomString(11);
         $entity = ["name" => "test1", "mobile" => $mobile, "create_date" => date("Y-m-d H:i:s")];
@@ -68,7 +68,7 @@ class AbstractLogicTest extends TestCase
      * @param GeneralLogic $logic
      * @return array
      */
-    public function _testUpdateMulti(GeneralLogic $logic): array
+    private function _testUpdateMulti(GeneralLogic $logic): array
     {
         $mobile = RandHelper::generateRandomString(11);
 
@@ -106,7 +106,7 @@ class AbstractLogicTest extends TestCase
      * @param GeneralLogic $logic
      * @return array
      */
-    public function _testGetMulti(GeneralLogic $logic): array
+    private function _testGetMulti(GeneralLogic $logic): array
     {
         $mobile1 = RandHelper::generateRandomString(11);
         $mobile2 = RandHelper::generateRandomString(11);
@@ -134,7 +134,7 @@ class AbstractLogicTest extends TestCase
      * @param GeneralLogic $logic
      * @return array
      */
-    public function _testAddMulti(GeneralLogic $logic): array
+    private function _testAddMulti(GeneralLogic $logic): array
     {
         $oldCount = $logic->getEntityCount();
         $entity1  = ["name" => "test1", "mobile" => "28345678901", "create_date" => date("Y-m-d H:i:s")];
@@ -156,7 +156,7 @@ class AbstractLogicTest extends TestCase
     /**
      * @return int
      */
-    public function _addEntities(): int
+    private function _addEntities(): int
     {
         $create_date = date("Y-m-d H:i:s");
 
