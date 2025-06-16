@@ -109,5 +109,4 @@ class StringHelperTest extends TestCase
         $expectedResult = "key1:value1;key3:value3";
         $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator));
     }
-
 }
