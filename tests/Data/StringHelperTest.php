@@ -94,13 +94,13 @@ class StringHelperTest extends TestCase
         $collectionString = "key1:value1,key2:value2,key3:value3";
         $itemKey = "key2";
         $expectedResult = "key1:value1,key3:value3";
-        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey));
+        $this->assertEquals($expectedResult, StringHelper::deleteCollectionItem($collectionString, $itemKey));
 
         // 测试用例 2: 尝试删除一个不存在的元素
         $collectionString = "key1:value1,key2:value2";
         $itemKey = "key3";
         $expectedResult = "key1:value1,key2:value2";
-        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey));
+        $this->assertEquals($expectedResult, StringHelper::deleteCollectionItem($collectionString, $itemKey));
 
         // 测试用例 3: 使用不同的分隔符
         $collectionString = "key1:value1;key2:value2;key3:value3";
@@ -108,6 +108,6 @@ class StringHelperTest extends TestCase
         $kvSeparator = ":";
         $itemsSeparator = ";";
         $expectedResult = "key1:value1;key3:value3";
-        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator));
+        $this->assertEquals($expectedResult, StringHelper::deleteCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator));
     }
 }
