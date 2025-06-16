@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "539a54d76cc4f825d7240826a49a48ea",
+    "content-hash": "594cf032eb599b383f8572f9e430d005",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -2369,11 +2369,57 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "wanren/tp32-phpunit-tool",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/notinmood/TP32-PHPUnit-Tool.git",
+                "reference": "039deb50be1a91be353d5f114777c50efd88b93e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/notinmood/TP32-PHPUnit-Tool/zipball/039deb50be1a91be353d5f114777c50efd88b93e",
+                "reference": "039deb50be1a91be353d5f114777c50efd88b93e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "phpunit/phpunit": "^9.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "PhpUnitHelper.php",
+                    "Response.php",
+                    "include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "zhuyajie",
+                    "email": "xcoolcc@gmail.com"
+                },
+                {
+                    "name": "xiedali",
+                    "email": "9727005@qq.com"
+                }
+            ],
+            "description": "ThinkPHP3.2单元测试辅助工具",
+            "support": {
+                "source": "https://github.com/notinmood/TP32-PHPUnit-Tool/tree/master"
+            },
+            "time": "2025-06-14T08:54:26+00:00"
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "wanren/tp32-phpunit-tool": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

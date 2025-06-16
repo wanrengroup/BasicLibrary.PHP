@@ -6,7 +6,10 @@
 ## 安装与使用
 
 ```
-composer require wanren/basiclibrary.php
+// 安装最新版本(支持环境ThinkORM3.x/4.x + PHP8.0)
+composer require wanren/basiclibrary.php:dev-master
+// 安装指定版本(支持环境ThinPHP3.2.x + PHP7.4)
+composer require wanren/basiclibrary.php:3.2.x-dev
 ```
 
 安装完成后，在代码中引入以下代码即可使用。

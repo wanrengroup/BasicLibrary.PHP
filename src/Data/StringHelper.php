@@ -118,5 +118,59 @@ class StringHelper
         return $_arr_positions;
     }
 
+    /**
+     * 交互(如果字集合中不存在$itemName则创建，如果存在则更新)字符串表示的集合中的某个元素的值
+     * @param string $collectionString 字符串表示的集合
+     * @param string $itemKey 元素键名称
+     * @param string $itemValue 元素值
+     * @param string $kvSeparator 同一个元素的键值对之间的分隔符
+     * @param string $itemsSeparator 多个元素之间的分隔符
+     * @return string
+     */
+    public static function interactCollectionItem(string $collectionString, string $itemKey, string $itemValue, string $kvSeparator = ':', string $itemsSeparator = ','): string
+    {
+        $collection = explode($itemsSeparator, $collectionString);
+
+        $collectionFixed = array();
+        foreach ($collection as $item) {
+            $itemArr = explode($kvSeparator, $item);
+            if (count($itemArr) === 2) {
+                $collectionFixed[$itemArr[0]] = $itemArr[1];
+            }
+        }
+
+        $collectionFixed[$itemKey] = $itemValue;
+
+        return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
+            return $key . $kvSeparator . $value;
+        }, array_keys($collectionFixed), array_values($collectionFixed)));
+    }
+
+    /**
+     * 删除字符串表示的集合中的某个元素
+     * @param string $collectionString
+     * @param string $itemKey
+     * @param string $kvSeparator
+     * @param string $itemsSeparator
+     * @return string
+     */
+    public static function DeleteCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
+    {
+        $collection = explode($itemsSeparator, $collectionString);
+
+        $collectionFixed = array();
+        foreach ($collection as $item) {
+            $itemArr = explode($kvSeparator, $item);
+            if (count($itemArr) === 2) {
+                $collectionFixed[$itemArr[0]] = $itemArr[1];
+            }
+        }
+
+        unset($collectionFixed[$itemKey]);
+
+        return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
+            return $key . $kvSeparator . $value;
+        }, array_keys($collectionFixed), array_values($collectionFixed)));
+    }
 
 }

@@ -55,6 +55,59 @@ class StringHelperTest extends TestCase
         self::assertTrue($actual);
     }
 
+    /**
+     * 测试 interactCollectionItem 方法
+     */
+    public function testInteractCollectionItem(): void
+    {
+        // 测试用例 1: 添加一个新元素
+        $collectionString = "key1:value1,key2:value2";
+        $itemKey = "key3";
+        $itemValue = "value3";
+        $expectedResult = "key1:value1,key2:value2,key3:value3";
+        $this->assertEquals($expectedResult, StringHelper::interactCollectionItem($collectionString, $itemKey, $itemValue));
 
+        // 测试用例 2: 更新现有元素的值
+        $collectionString2 = "key1:value1,key2:value2";
+        $itemKey = "key2";
+        $itemValue = "newValue2";
+        $expectedResult = "key1:value1,key2:newValue2";
+        $this->assertEquals($expectedResult, StringHelper::interactCollectionItem($collectionString2, $itemKey, $itemValue));
+
+        // 测试用例 3: 使用不同的分隔符
+        $collectionString3 = "key1-value1;key2-value2";
+        $itemKey = "key3";
+        $itemValue = "value3";
+        $kvSeparator = "-";
+        $itemsSeparator = ";";
+        $expectedResult = "key1-value1;key2-value2;key3-value3";
+        $this->assertEquals($expectedResult, StringHelper::interactCollectionItem($collectionString3, $itemKey, $itemValue, $kvSeparator, $itemsSeparator));
+    }
+
+    /**
+     * 测试 DeleteCollectionItem 方法
+     */
+    public function testDeleteCollectionItem(): void
+    {
+        // 测试用例 1: 删除一个现有元素
+        $collectionString = "key1:value1,key2:value2,key3:value3";
+        $itemKey = "key2";
+        $expectedResult = "key1:value1,key3:value3";
+        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey));
+
+        // 测试用例 2: 尝试删除一个不存在的元素
+        $collectionString = "key1:value1,key2:value2";
+        $itemKey = "key3";
+        $expectedResult = "key1:value1,key2:value2";
+        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey));
+
+        // 测试用例 3: 使用不同的分隔符
+        $collectionString = "key1:value1;key2:value2;key3:value3";
+        $itemKey = "key2";
+        $kvSeparator = ":";
+        $itemsSeparator = ";";
+        $expectedResult = "key1:value1;key3:value3";
+        $this->assertEquals($expectedResult, StringHelper::DeleteCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator));
+    }
 
 }
