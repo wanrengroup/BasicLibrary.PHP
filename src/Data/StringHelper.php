@@ -156,10 +156,10 @@ class StringHelper
      * @param string|null $collectionString
      * @param string $kvSeparator
      * @param string $itemsSeparator
-     * @param Closure $callback 回调函数，参数为整理成的数组的引用
+     * @param Closure|null $callback 回调函数，参数为整理成的数组的引用
      * @return string
      */
-    private static function dealCollectionItem(?string $collectionString, string $kvSeparator = ':', string $itemsSeparator = ',', Closure $callback): string
+    private static function dealCollectionItem(?string $collectionString, string $kvSeparator = ':', string $itemsSeparator = ',', ?Closure $callback = null): string
     {
         if (empty($collectionString)) {
             $collectionString = '';
@@ -175,7 +175,9 @@ class StringHelper
             }
         }
 
-        $callback($kvpCollection);
+        if($callback && is_callable($callback)){
+            $callback($kvpCollection);
+        }
 
         return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
             return $key . $kvSeparator . $value;
