@@ -122,45 +122,44 @@ class StringHelper
 
     /**
      * 交互(如果字集合中不存在$itemName则创建，如果存在则更新)字符串表示的集合中的某个元素的值
-     * @param string $collectionString 字符串表示的集合
+     * @param string|null $collectionString 字符串表示的集合
      * @param string $itemKey 元素键名称
      * @param string $itemValue 元素值
      * @param string $kvSeparator 同一个元素的键值对之间的分隔符
      * @param string $itemsSeparator 多个元素之间的分隔符
      * @return string
      */
-    public static function interactCollectionItem(string $collectionString, string $itemKey, string $itemValue, string $kvSeparator = ':', string $itemsSeparator = ','): string
+    public static function interactCollectionItem(?string $collectionString, string $itemKey, string $itemValue, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
-        return self::dealCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey, $itemValue) {
+        return self::dealCollectionItem($collectionString, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey, $itemValue) {
             $collectionFixed[$itemKey] = $itemValue;
         });
     }
 
     /**
      * 删除字符串表示的集合中的某个元素
-     * @param string $collectionString
+     * @param string|null $collectionString
      * @param string $itemKey
      * @param string $kvSeparator
      * @param string $itemsSeparator
      * @return string
      */
-    public static function deleteCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
+    public static function deleteCollectionItem(?string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
-        return self::dealCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey) {
+        return self::dealCollectionItem($collectionString, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey) {
             unset($collectionFixed[$itemKey]);
         });
     }
 
     /**
      * 将表示集合的字符串转换为数组；调用回调函数对数组进行处理；并将处理后的数组转换回字符串。
-     * @param string $collectionString
-     * @param string $itemKey
+     * @param string|null $collectionString
      * @param string $kvSeparator
      * @param string $itemsSeparator
-     * @param Closure $callback 回调函数，参数为整理成的数组的引用
+     * @param Closure|null $callback 回调函数，参数为整理成的数组的引用
      * @return string
      */
-    private static function dealCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ',', Closure $callback): string
+    private static function dealCollectionItem(?string $collectionString, string $kvSeparator = ':', string $itemsSeparator = ',', ?Closure $callback = null): string
     {
         if (empty($collectionString)) {
             $collectionString = '';
@@ -176,10 +175,13 @@ class StringHelper
             }
         }
 
-        $callback($kvpCollection);
+        if($callback && is_callable($callback)){
+            $callback($kvpCollection);
+        }
 
         return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
             return $key . $kvSeparator . $value;
         }, array_keys($kvpCollection), array_values($kvpCollection)));
     }
+
 }
