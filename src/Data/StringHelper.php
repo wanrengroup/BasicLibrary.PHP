@@ -10,6 +10,8 @@
 
 namespace WanRen\Data;
 
+use Closure;
+
 class StringHelper
 {
     /**
@@ -129,21 +131,9 @@ class StringHelper
      */
     public static function interactCollectionItem(string $collectionString, string $itemKey, string $itemValue, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
-        $collection = explode($itemsSeparator, $collectionString);
-
-        $collectionFixed = array();
-        foreach ($collection as $item) {
-            $itemArr = explode($kvSeparator, $item);
-            if (count($itemArr) === 2) {
-                $collectionFixed[$itemArr[0]] = $itemArr[1];
-            }
-        }
-
-        $collectionFixed[$itemKey] = $itemValue;
-
-        return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
-            return $key . $kvSeparator . $value;
-        }, array_keys($collectionFixed), array_values($collectionFixed)));
+        return self::dealCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey, $itemValue) {
+            $collectionFixed[$itemKey] = $itemValue;
+        });
     }
 
     /**
@@ -154,23 +144,42 @@ class StringHelper
      * @param string $itemsSeparator
      * @return string
      */
-    public static function DeleteCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
+    public static function deleteCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
+        return self::dealCollectionItem($collectionString, $itemKey, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey) {
+            unset($collectionFixed[$itemKey]);
+        });
+    }
+
+    /**
+     * 将表示集合的字符串转换为数组；调用回调函数对数组进行处理；并将处理后的数组转换回字符串。
+     * @param string $collectionString
+     * @param string $itemKey
+     * @param string $kvSeparator
+     * @param string $itemsSeparator
+     * @param Closure $callback 回调函数，参数为整理成的数组的引用
+     * @return string
+     */
+    private static function dealCollectionItem(string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ',', Closure $callback): string
+    {
+        if (empty($collectionString)) {
+            $collectionString = '';
+        }
+
         $collection = explode($itemsSeparator, $collectionString);
 
-        $collectionFixed = array();
+        $kvpCollection = array();
         foreach ($collection as $item) {
             $itemArr = explode($kvSeparator, $item);
             if (count($itemArr) === 2) {
-                $collectionFixed[$itemArr[0]] = $itemArr[1];
+                $kvpCollection[$itemArr[0]] = $itemArr[1];
             }
         }
 
-        unset($collectionFixed[$itemKey]);
+        $callback($kvpCollection);
 
         return implode($itemsSeparator, array_map(static function ($key, $value) use ($kvSeparator) {
             return $key . $kvSeparator . $value;
-        }, array_keys($collectionFixed), array_values($collectionFixed)));
+        }, array_keys($kvpCollection), array_values($kvpCollection)));
     }
-
 }
