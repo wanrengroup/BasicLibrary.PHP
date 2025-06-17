@@ -131,9 +131,9 @@ class StringHelper
      */
     public static function interactCollectionItem(?string $collectionString, string $itemKey, string $itemValue, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
-        return self::dealCollectionItems($collectionString, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey, $itemValue) {
+        return self::dealCollectionItems(static function (array &$collectionFixed) use ($itemKey, $itemValue) {
             $collectionFixed[$itemKey] = $itemValue;
-        });
+        }, $collectionString, $kvSeparator, $itemsSeparator);
     }
 
     /**
@@ -146,21 +146,21 @@ class StringHelper
      */
     public static function deleteCollectionItem(?string $collectionString, string $itemKey, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
-        return self::dealCollectionItems($collectionString, $kvSeparator, $itemsSeparator, static function (array &$collectionFixed) use ($itemKey) {
+        return self::dealCollectionItems(static function (array &$collectionFixed) use ($itemKey) {
             unset($collectionFixed[$itemKey]);
-        });
+        }, $collectionString, $kvSeparator, $itemsSeparator);
     }
 
     /**
      * 处理字符串表示的集合中的各个元素的信息
      * 将表示集合的字符串转换为数组；调用回调函数对数组进行处理；并将处理后的数组转换回字符串。
+     * @param Closure $callback 回调函数，参数为整理成的数组的引用
      * @param string|null $collectionString
      * @param string $kvSeparator
      * @param string $itemsSeparator
-     * @param Closure|null $callback 回调函数，参数为整理成的数组的引用
      * @return string
      */
-    public static function dealCollectionItems(?string $collectionString, string $kvSeparator = ':', string $itemsSeparator = ',', ?Closure $callback = null): string
+    public static function dealCollectionItems(Closure $callback, ?string $collectionString, string $kvSeparator = ':', string $itemsSeparator = ','): string
     {
         if (empty($collectionString)) {
             $collectionString = '';
@@ -176,7 +176,7 @@ class StringHelper
             }
         }
 
-        if($callback && is_callable($callback)){
+        if (is_callable($callback)) {
             $callback($kvpCollection);
         }
 
