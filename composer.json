@@ -27,6 +27,9 @@
     "wanren/tp32-phpunit-tool": "dev-master"
   },
   "autoload": {
+    "classmap": [
+      "ThinkPHP/Library"
+    ],
     "psr-4": {
       "WanRen\\Test\\": "tests",
       "WanRen\\": "src"

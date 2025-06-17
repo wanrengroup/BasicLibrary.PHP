@@ -10,10 +10,11 @@
 
 namespace Biz;
 
+use WanRen\Test\Basic\LocalTestCase;
 use WanRen\Test\Biz\AbstractLogicTestingModel;
 use PHPUnit\Framework\TestCase;
 
-class AbstractLogicTestingTest extends TestCase
+class AbstractLogicTestingTest extends LocalTestCase
 {
     public function testGetSome(): void
     {
