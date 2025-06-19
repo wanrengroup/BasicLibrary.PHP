@@ -3,3 +3,5 @@
 logs/
 /.phpunit.result.cache
 /tests/.Manual/my_logs/
+/Application/Runtime/
+/Application/Runtime

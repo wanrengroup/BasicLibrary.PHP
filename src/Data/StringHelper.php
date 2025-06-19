@@ -154,7 +154,7 @@ class StringHelper
     /**
      * 处理字符串表示的集合中的各个元素的信息
      * 将表示集合的字符串转换为数组；调用回调函数对数组进行处理；并将处理后的数组转换回字符串。
-     * @param Closure $callback 回调函数，参数为整理成的数组的引用
+     * @param Closure $callback 回调函数，参数为整理成的数组的各个元素(数组元素的格式为[键=>值])
      * @param string|null $collectionString
      * @param string $kvSeparator
      * @param string $itemsSeparator
