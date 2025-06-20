@@ -1,7 +1,10 @@
 # 说明
 
 - 本说明需要针对TP3.2.x + PHP7.4进行重新整理。
-- 项目中使用的ThinkPHP目录，应该采用软连接或者引用的方式，而不是直接拷贝到项目目录下。
+- 项目中使用的ThinkPHP目录，应该采用软连接或者引用的方式，而不是直接拷贝到项目目录下。具体操作：
+  - 在命令行模式中，进入本项目的根目录，
+  - 执行命令：`mklink /D "ThinkPHP" "/path/to/TPproject/ThinkPHP"`，例如：`mklink /D "ThinkPHP" "D:\HOME\OpenSource\ThinkPHP3.2\ThinkPHP"`
+  - 然后在项目中使用`ThinkPHP`目录即可。当向git提交代码时，只需要提交`ThinkPHP`目录（而不会提交整个ThinkPHP目录下的所有文件）即可。
 
 1. 本项目是对PHP常用函数、类、扩展的封装，方便开发者使用。
 2. 本项目已自动关联到PHP包管理仓库Packagist（https://packagist.org/ ），可以直接通过composer安装和更新。
