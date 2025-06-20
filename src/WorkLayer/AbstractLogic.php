@@ -145,7 +145,6 @@ abstract class AbstractLogic
             $modelName   = $modelOrModelName->getName();
         }
 
-
         //2-> 确定数据库连接配置
         $connection = "";
         if (is_string($connectionNameOrOptions)) {
