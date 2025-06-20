@@ -19,6 +19,7 @@ use Closure;
 //use think\db\exception\ModelNotFoundException;
 //use think\facade\Db;
 //use think\Model;
+use Think\Exception;
 use Think\Model;
 use WanRen\Data\ArrayHelper;
 use WanRen\Data\StringHelper;
@@ -60,7 +61,7 @@ use WanRen\IO\LoggerHelper;
 abstract class AbstractLogic
 {
     private Model $model;
-    private bool $useIsolatedModeInOperations;
+    //private bool $useIsolatedModeInOperations;
 
     private BaseQuery $baseQuery;
 
@@ -172,35 +173,31 @@ abstract class AbstractLogic
         return $this->model->getLastSql();
     }
 
-    ///**
-    // * 获取单条数据
-    // * @param string|Closure|array $where
-    // * @param string $orderBy
-    // * @param string $fields
-    // * @param bool $result_as_array 是否返回数组形式的结果
-    // * @return array|mixed|null
-    // */
-    //public function getEntity(string|Closure|array $where = [], string $orderBy = "", string $fields = "", bool $result_as_array = true): mixed
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    try {
-    //        $query  = $this->baseQuery->field($fields)->order($orderBy);
-    //        $query  = $this->prepareWhere($query, $where);
-    //        $result = $query->find();
-    //
-    //        if ($result_as_array && $result instanceof Model) {
-    //            return $result->toArray();
-    //        }
-    //
-    //        return $result;
-    //    } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-    //        LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
-    //        return null;
-    //    }
-    //}
+    /**
+     * 获取单条数据
+     * @param mixed $where 具体类型可以为：string|Closure|array
+     * @param string $orderBy
+     * @param string $fields
+     * @return array|mixed|null
+     */
+    public function getEntity($where, string $orderBy = "", string $fields = "")
+    {
+        try {
+            $query = $this->model->field($fields)->order($orderBy);
+            //$query  = $this->prepareWhere($query, $where);
+            $query  = $query->where($where);
+            $result = $query->find();
+
+            //if ($result_as_array && $result instanceof Model) {
+            //    return $result->toArray();
+            //}
+
+            return $result;
+        } catch (Exception $e) {
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
+            return null;
+        }
+    }
     //
     ///**
     // * 获取不包含数据（数据为0或“”），只包含数据结构的空实体。
@@ -420,19 +417,15 @@ abstract class AbstractLogic
     //}
     //
     //
-    ///**
-    // * 添加数据
-    // * @param $data array 要保存的实体数据
-    // * @return int | bool 成功返回新增数据的主键值; 失败返回false
-    // */
-    //public function addEntity(array $data): int|bool
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    return $this->baseQuery->insertGetId($data);
-    //}
+    /**
+     * 添加数据
+     * @param $data array 要保存的实体数据
+     * @return int | bool 成功返回新增数据的主键值; 失败返回false
+     */
+    public function addEntity(array $data)
+    {
+        return $this->model->add($data);
+    }
     //
     ///**
     // * 更新数据

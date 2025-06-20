@@ -29,5 +29,4 @@ class LocalTestCase extends TestCase
         //self::$app->setTestConfig(['DB_NAME' => 'my_tp8_study', 'DB_HOST' => '127.0.0.1', 'DB_USER' => 'root', 'DB_PWD' => '123456', 'DB_PORT' => 3306, 'DB_PREFIX' => 'm_']); // 一定要设置一个测试用的数据库,避免测试过程破坏生产数据
         self::$app->start();
     }
-
 }

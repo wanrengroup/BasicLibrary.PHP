@@ -10,7 +10,6 @@
 
 namespace WanRen\Test\Basic;
 
-use PHPUnit\Framework\TestCase;
 use WanRen\WorkLayer\GeneralLogic;
 use WanRen\Data\RandHelper;
 
@@ -171,9 +170,8 @@ class AbstractLogicTest extends LocalTestCase
 
     public function setUp(): void
     {
-        //DbAssert::initDb();
         parent::setUp();
-        $this->logic = new GeneralLogic(self::$targetTable, []);
+        $this->logic = new GeneralLogic(self::$targetTable);
     }
 
     //public function testAdd(): void
@@ -329,23 +327,23 @@ class AbstractLogicTest extends LocalTestCase
     //    self::assertEquals($expect, $actual);
     //}
 
-    //public function testGet(): void
-    //{
-    //    $mobile = RandHelper::generateRandomString(11);
-    //
-    //    $entity = ["name" => "test1", "mobile" => $mobile, "create_date" => date("Y-m-d H:i:s")];
-    //    $this->logic->addEntity($entity);
-    //    $result = $this->logic->getEntity(["mobile" => $mobile]);
-    //
-    //    $expect = $mobile;
-    //    $actual = $result["mobile"];
-    //
-    //    print_r("──Gotten 数据结果───────────────────────────────────" . PHP_EOL);
-    //    print_r($result);
-    //    print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
-    //
-    //    self::assertEquals($expect, $actual);
-    //}
+    public function testGet(): void
+    {
+        $mobile = RandHelper::generateRandomString(11);
+
+        $entity = ["name" => "test1", "mobile" => $mobile, "create_date" => date("Y-m-d H:i:s")];
+        $this->logic->addEntity($entity);
+        $result = $this->logic->getEntity(["mobile" => $mobile]);
+
+        $expect = $mobile;
+        $actual = $result["mobile"];
+
+        print_r("──Gotten 数据结果───────────────────────────────────" . PHP_EOL);
+        print_r($result);
+        print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
+
+        self::assertEquals($expect, $actual);
+    }
 
     //public function testGetMultiIsolate(): void
     //{
