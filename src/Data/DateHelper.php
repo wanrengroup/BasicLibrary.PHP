@@ -53,9 +53,7 @@ class DateHelper
      */
     public static function addDays($dateValue, int $days): DateTime
     {
-        $date_object = self::getDateTime($dateValue);
-        $date_object->modify("+$days days");
-        return $date_object;
+        return self::modifyDatePart($dateValue, "+$days days");
     }
 
     /**
@@ -66,9 +64,7 @@ class DateHelper
      */
     public static function addMonths($dateValue, int $months): DateTime
     {
-        $date_object = self::getDateTime($dateValue);
-        $date_object->modify("+$months months");
-        return $date_object;
+        return self::modifyDatePart($dateValue, "+$months months");
     }
 
     /**
@@ -79,9 +75,15 @@ class DateHelper
      */
     public static function addYears($dateValue, int $years): DateTime
     {
-        $date_object = self::getDateTime($dateValue);
-        $date_object->modify("+$years years");
-        return $date_object;
+        return self::modifyDatePart($dateValue, "+$years years");
+    }
+
+    private static function modifyDatePart($dateValue, string $modifier): DateTime
+    {
+        $date_object       = self::getDateTime($dateValue);
+        $date_object_clone = clone $date_object;
+        $date_object_clone->modify($modifier);
+        return $date_object_clone;
     }
 
     /**
@@ -96,7 +98,8 @@ class DateHelper
         }
 
         if ($dateValue instanceof DateTime) {
-            return $dateValue;
+            // 防止修改原对象，克隆一个新的对象。
+            return clone $dateValue;
         }
 
         if (is_float($dateValue) || is_int($dateValue)) {

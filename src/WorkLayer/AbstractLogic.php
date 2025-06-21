@@ -61,10 +61,6 @@ use WanRen\IO\LoggerHelper;
 abstract class AbstractLogic
 {
     private Model $model;
-    //private bool $useIsolatedModeInOperations;
-
-    private BaseQuery $baseQuery;
-
     private static string $conditionOrPrefix = "";
     private static string $conditionAndPrefix = "";
 
@@ -72,7 +68,7 @@ abstract class AbstractLogic
      * 构造函数，主要作用是实例化模型对象，传入的选填的参数为(不带前缀的)数据库表名或模型对象。
      * 创建模型对象时：如果派生类的类名称，可以跟数据库表对应，就可以省略传入表名。
      * @param string|array $connectionNameOrOptions 数据库连接名称或更多配置项（如果不传，则使用默认的数据库连接；如果传入字符串，则表示选用指定的数据库连接；如果传入数组，则表示配置项（在配置项中可以通过键名connectionName或connection指定数据库连接名称）
-     * @param bool|string|Model $modelName 数据库表名或模型对象；如果使用默认的数据库表名，此参数也可以传入true，则使用隔离模式（此时自动忽略第二个参数）。
+     * @param string $modelName 数据库表名或模型对象；如果使用默认的数据库表名，此参数也可以传入true，则使用隔离模式（此时自动忽略第二个参数）。
      * （共享模式下，前次动作对模型的操作会影响到下次的动作。比如：
      * 连续getEntity多次的时候，如果没有使用隔离模式，ThinkORM会在第后一次调用时where条件的时候叠加上前一次的where条件；让开发者感觉“莫名其妙”。
      * 因此这个时候就需要使用隔离模式。）
@@ -80,12 +76,6 @@ abstract class AbstractLogic
      */
     public function __construct(string $modelName = "", $connectionNameOrOptions = "")
     {
-        //if (is_bool($modelName)) {
-        //    $useIsolatedModeInOperations = $modelName;
-        //    $modelName                   = "";
-        //}
-
-        //$this->useIsolatedModeInOperations = $useIsolatedModeInOperations;
         $this->setModelDetails($modelName, $connectionNameOrOptions);
     }
 
@@ -125,26 +115,17 @@ abstract class AbstractLogic
     /**
      * 设置模型对象
      * (因为模型支持连贯操作，所以模型对象对历史条件具有记忆功能。因此，如果需要一个不含有历史条件的模型对象，可以重新实例化一个模型对象。)
-     * @param mixed $modelOrModelName
+     * @param string $modelName
      * @param string|array $connectionOrOptions
      * @return void
      */
-    private function setModelDetails($modelOrModelName = "", $connectionOrOptions = ""): void
+    private function setModelDetails(string $modelName = "", $connectionOrOptions = ""): void
     {
-        if ($modelOrModelName instanceof Model) {
-            $this->model = $modelOrModelName;
-            return;
-        }
-
         //1-> 确定模型对象的名字
-        $modelName = "";
-        if (is_string($modelOrModelName)) {
-            $modelName = $modelOrModelName;
-            if (empty($modelName)) {
-                $modelName = str_replace('\\', '/', static::class);
-                $modelName = basename($modelName);
-                $modelName = str_replace('Logic', '', $modelName);
-            }
+        if (is_string($modelName) && empty($modelName)) {
+            $modelName = str_replace('\\', '/', static::class);
+            $modelName = basename($modelName);
+            $modelName = str_replace('Logic', '', $modelName);
         }
 
         //2-> 确定数据库连接配置
@@ -184,8 +165,8 @@ abstract class AbstractLogic
     {
         try {
             $query = $this->model->field($fields)->order($orderBy);
-            //$query  = $this->prepareWhere($query, $where);
-            $query  = $query->where($where);
+            $query = $this->prepareWhere($query, $where);
+            //$query  = $query->where($where);
             $result = $query->find();
 
             //if ($result_as_array && $result instanceof Model) {
@@ -327,46 +308,42 @@ abstract class AbstractLogic
     //    return $query->min($field);
     //}
     //
-    ///**
-    // * 获取数据列表
-    // * @param string|Closure|array $where
-    // * @param string $limit
-    // * @param string $orderBy
-    // * @param string $fields
-    // * @param array $options 更多可选（不常用）的参数信息，包括：
-    // * 1-> result_as_array: 是否返回数组形式的结果，默认为true。
-    // * 2-> ignore_where_condition_names : 忽略的where条件字段名数组（即强制要求不参与where条件的字段名）。
-    // * 如果包含了"__no_default__"这个特殊字符串的话，则不会添加默认的忽略条件。本属性只$where参数中的[$key=>$value]类型的元素有忽略作用。
-    // * 3-> ...(其他可选参数)
-    // * @return array|Collection|null
-    // */
-    //public function getEntities(string|Closure|array $where = [], mixed $limit = "", string $orderBy = "", string $fields = "", array $options = []): array|Collection|null
-    //{
-    //    $result_as_array           = $options['result_as_array'] ?? true;
-    //    $ignoreWhereConditionNames = $options['ignore_where_condition_names'] ?? [];
-    //
-    //    $this->prepareParams($where, $ignoreWhereConditionNames, $limit, $orderBy, $fields);
-    //
-    //    //3-> 获取数据
-    //    try {
-    //        if ($this->useIsolatedModeInOperations) {
-    //            $this->resetBaseQuery();
-    //        }
-    //
-    //        $query  = $this->baseQuery->field($fields)->order($orderBy)->limit($limit);
-    //        $query  = $this->prepareWhere($query, $where);
-    //        $result = $query->select();
-    //
-    //        if ($result_as_array && $result instanceof Collection) {
-    //            return $result->toArray();
-    //        }
-    //
-    //        return $result;
-    //    } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
-    //        LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
-    //        return null;
-    //    }
-    //}
+    /**
+     * 获取数据列表
+     * @param string|array $where
+     * @param string $limit
+     * @param string $orderBy
+     * @param string $fields
+     * @param array $options 更多可选（不常用）的参数信息，包括：
+     * 1-> result_as_array: 是否返回数组形式的结果，默认为true。
+     * 2-> ignore_where_condition_names : 忽略的where条件字段名数组（即强制要求不参与where条件的字段名）。
+     * 如果包含了"__no_default__"这个特殊字符串的话，则不会添加默认的忽略条件。本属性只$where参数中的[$key=>$value]类型的元素有忽略作用。
+     * 3-> ...(其他可选参数)
+     * @return array|Collection|null
+     */
+    public function getEntities($where = [], string $limit = "", string $orderBy = "", string $fields = "", array $options = [])
+    {
+        $result_as_array           = $options['result_as_array'] ?? true;
+        $ignoreWhereConditionNames = $options['ignore_where_condition_names'] ?? [];
+
+        $this->prepareParams($where, $ignoreWhereConditionNames, $limit, $orderBy, $fields);
+
+        //3-> 获取数据
+        try {
+            $query  = $this->getModel()->field($fields)->order($orderBy)->limit($limit);
+            $query  = $this->prepareWhere($query, $where);
+            $result = $query->select();
+
+            if ($result_as_array && $result instanceof Collection) {
+                return $result->toArray();
+            }
+
+            return $result;
+        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
+            return null;
+        }
+    }
     //
     //
     ///**
@@ -567,150 +544,205 @@ abstract class AbstractLogic
     //
     //    return fail('删除失败');
     //}
-    //
-    //
-    ///**
-    // * 对参数进行预处理
-    // * @param string|Closure|array $where
-    // * @param array $ignoreWhereConditionNames
-    // * @param mixed $limit
-    // * @param string $orderBy
-    // * @param string $field
-    // * @return void
-    // */
-    //private function prepareParams(string|Closure|array &$where, array $ignoreWhereConditionNames, mixed &$limit, string &$orderBy, string &$field): void
-    //{
-    //    if (empty($limit)) {
-    //        $limit = 0;
-    //    }
-    //
-    //    // 如果where参数是字符串，则直接返回；否则，解析where参数
-    //    if (is_string($where)) {
-    //        return;
-    //    }
-    //
-    //    // 如果where参数是Closure，则直接返回；否则，解析where参数
-    //    if ($where instanceof Closure) {
-    //        return;
-    //    }
-    //
-    //    //1-> 对参数进行归一处理
-    //    if (empty($where)) {
-    //        $where = [];
-    //    }
-    //
-    //    //2-> 从where中解析出limit、orderBy和fields(field)等信息
-    //    if (isset($where['limit'])) {
-    //        if (empty($limit)) {
-    //            $limit = $where['limit'];
-    //        }
-    //
-    //        unset($where['limit']);
-    //    }
-    //
-    //    if (isset($where['orderby'])) {
-    //        if (empty($orderBy)) {
-    //            $orderBy = $where['orderby'];
-    //        }
-    //
-    //        unset($where['orderby']);
-    //    }
-    //
-    //    if (isset($where['orderBy'])) {
-    //        if (empty($orderBy)) {
-    //            $orderBy = $where['orderBy'];
-    //        }
-    //
-    //        unset($where['orderBy']);
-    //    }
-    //
-    //    if (isset($where['field'])) {
-    //        if (empty($field)) {
-    //            $field = $where['field'];
-    //        }
-    //
-    //        unset($where['field']);
-    //    }
-    //
-    //    if (isset($where['fields'])) {
-    //        if (empty($field)) {
-    //            $field = $where['fields'];
-    //        }
-    //
-    //        unset($where['fields']);
-    //    }
-    //
-    //    //排除掉一些非业务的过滤条件，比如page、only_refresh_time等。
-    //    //如果包含了"__no_default__"这个特殊字符串的话，则不会有默认的忽略条件。
-    //    if (!in_array("__no_default__", $ignoreWhereConditionNames, true)) {
-    //        $ignoreWhereConditionNames = array_merge($ignoreWhereConditionNames, ['page', 'only_refresh_time']);
-    //    }
-    //
-    //    foreach ($ignoreWhereConditionNames as $item) {
-    //        if (isset($where[$item])) {
-    //            unset($where[$item]);
-    //        }
-    //    }
-    //}
-    //
-    ///**
-    // * 处理各种 Where条件
-    // * @param BaseQuery $query
-    // * @param string|array|Closure $where 字符串、闭包或多维数组表示的过滤条件
-    // * @return BaseQuery
-    // */
-    //private function prepareWhere(BaseQuery $query, string|Closure|array $where): BaseQuery
-    //{
-    //    if (is_string($where)) {
-    //        return $query->whereRaw($where);
-    //    }
-    //
-    //    if ($where instanceof Closure) {
-    //        return $query->where($where);
-    //    }
-    //
-    //    if (!is_array($where)) {
-    //        return $query;
-    //    }
-    //
-    //    //处理比如 ['id', '=', 1] 或者 ['id' , 'BETWEEN', [1, 10]] 这种简单结构的一维数组
-    //    //判断标准：一维索引数组，并且数组第一个元素是字符串
-    //    if (ArrayHelper::getDimensionCount($where) <= 2 &&
-    //        ArrayHelper::isIndex($where) &&
-    //        count($where) > 0 &&
-    //        gettype($where[0]) === 'string') {
-    //        $where = [$where];
-    //    }
-    //
-    //
-    //    $conditionOrPrefix  = self::getConditionOrPrefix();
-    //    $conditionAndPrefix = self::getConditionAndPrefix();
-    //
-    //    foreach ($where as $key => $value) {
-    //        //1->如果是索引数组，则肯定多个条件全部为AND关系
-    //        if (is_numeric($key)) {
-    //            $query = $query->where([$value]);
-    //        }
-    //
-    //        //2->如果是关联数组，则需要处理OR关系
-    //        if (is_string($key)) {
-    //            if (StringHelper::isStartWith($key, $conditionOrPrefix)) {
-    //                if (ArrayHelper::getDimensionCount($value) === 1) {
-    //                    $value = [$value];
-    //                }
-    //                $query = $query->whereOr($value);
-    //            } else if (StringHelper::isStartWith($key, $conditionAndPrefix)) {
-    //                if (ArrayHelper::getDimensionCount($value) === 1) {
-    //                    $value = [$value];
-    //                }
-    //                $query = $query->where($value);
-    //            } else {
-    //                // 如果是传递的数组为 ['id' => 2] 这种形式，则继续保留这种格式
-    //                $query = $query->where([$key => $value]);
-    //            }
-    //        }
-    //    }
-    //
-    //    return $query;
-    //}
+
+
+    /**
+     * 对参数进行预处理
+     * @param string|array $where
+     * @param array $ignoreWhereConditionNames
+     * @param mixed $limit
+     * @param string $orderBy
+     * @param string $field
+     * @return void
+     */
+    private function prepareParams(&$where, array $ignoreWhereConditionNames, string &$limit, string &$orderBy, string &$field): void
+    {
+        if (empty($limit)) {
+            $limit = 0;
+        }
+
+        // 如果where参数是字符串，则直接返回；否则，解析where参数
+        if (is_string($where)) {
+            return;
+        }
+
+        //1-> 对参数进行归一处理
+        if (empty($where)) {
+            $where = [];
+        }
+
+        //2-> 从where中解析出limit、orderBy和fields(field)等信息
+        if (isset($where['limit'])) {
+            if (empty($limit)) {
+                $limit = $where['limit'];
+            }
+
+            unset($where['limit']);
+        }
+
+        if (isset($where['orderby'])) {
+            if (empty($orderBy)) {
+                $orderBy = $where['orderby'];
+            }
+
+            unset($where['orderby']);
+        }
+
+        if (isset($where['orderBy'])) {
+            if (empty($orderBy)) {
+                $orderBy = $where['orderBy'];
+            }
+
+            unset($where['orderBy']);
+        }
+
+        if (isset($where['field'])) {
+            if (empty($field)) {
+                $field = $where['field'];
+            }
+
+            unset($where['field']);
+        }
+
+        if (isset($where['fields'])) {
+            if (empty($field)) {
+                $field = $where['fields'];
+            }
+
+            unset($where['fields']);
+        }
+
+        //排除掉一些非业务的过滤条件，比如page、only_refresh_time等。
+        //如果包含了"__no_default__"这个特殊字符串的话，则不会有默认的忽略条件。
+        if (!in_array("__no_default__", $ignoreWhereConditionNames, true)) {
+            $ignoreWhereConditionNames = array_merge($ignoreWhereConditionNames, ['page', 'only_refresh_time']);
+        }
+
+        foreach ($ignoreWhereConditionNames as $item) {
+            if (isset($where[$item])) {
+                unset($where[$item]);
+            }
+        }
+    }
+
+    private function convertConditionsFormat(array $value): array
+    {
+        $map = [];
+
+        if (ArrayHelper::getDimensionCount($value) >= 2 &&
+            ArrayHelper::isIndex($value) &&
+            count($value) > 0 &&
+            gettype($value[0]) === 'string') {
+
+            foreach ($value as $item) {
+                $map[] = $this->convertConditionFormat($item);
+            }
+
+            return $map;
+        }else{
+            return convertConditionFormat($value);
+        }
+    }
+
+    /**
+     * 将['mobile', 'like', 'thinkphp%'] 这种形式条件数组转换为 ['mobile' => ['like', 'thinkphp%']] 这种形式的条件数组
+     * @param array $value
+     * @return array
+     */
+    private function convertConditionFormat(array $value): array
+    {
+        $map = [];
+
+        /** @noinspection all */
+        if (is_array($value) && count($value) >= 2) {
+            $realKey   = $value[0];
+            $realValue = [];
+            foreach ($value as $index => $item) {
+                if ($index > 0) {
+                    $realValue[] = $item;
+                }
+            }
+            $map[$realKey] = $realValue;
+        }
+        return $map;
+    }
+
+    /**
+     * 处理各种 Where条件
+     * @param Model $query
+     * @param string|array $where 字符串、闭包或多维数组表示的过滤条件
+     * @return Model
+     */
+    private function prepareWhere(Model $query, $where): Model
+    {
+        if (is_string($where)) {
+            return $query->where($where);
+        }
+
+        if (!is_array($where)) {
+            return $query;
+        }
+
+        //处理比如 ['id', '=', 1] 或者 ['id' , 'BETWEEN', [1, 10]] 这种简单结构的一维数组
+        //判断标准：一维索引数组，并且数组第一个元素是字符串
+        if (ArrayHelper::getDimensionCount($where) <= 2 &&
+            ArrayHelper::isIndex($where) &&
+            count($where) > 0 &&
+            gettype($where[0]) === 'string') {
+
+            $where = [$where];
+        }
+
+        $conditionOrPrefix  = self::getConditionOrPrefix();
+        $conditionAndPrefix = self::getConditionAndPrefix();
+
+        foreach ($where as $key => $value) {
+            //1->如果是索引数组，则肯定多个条件全部为AND关系
+            // 对 ['mobile', 'like', 'thinkphp%'] 这种形式array类型的value进行解析处理
+            if (is_numeric($key)) {
+                $map   = $this->convertConditionFormat($value);
+                $query = $query->where($map);
+            }
+
+            //2->如果是关联数组，则需要处理OR关系
+            if (is_string($key)) {
+                if (StringHelper::isStartWith($key, $conditionOrPrefix)) {
+                    if (ArrayHelper::getDimensionCount($value) === 1) {
+                        $value = [$value];
+                    }
+
+                    $condition = [];
+                    foreach ($value as $item) {
+                        $condition[] = $this->convertConditionFormat($item);
+                    }
+
+                    $condition['_logic'] = 'or';
+                    $map['_complex']     = $condition;
+
+                    $query = $query->where($map);
+
+                } else if (StringHelper::isStartWith($key, $conditionAndPrefix)) {
+                    if (ArrayHelper::getDimensionCount($value) === 1) {
+                        $value = [$value];
+                    }
+                    //$query = $query->where($value);
+                    $condition = [];
+                    foreach ($value as $item) {
+                        $condition[] = $this->convertConditionFormat($item);
+                    }
+
+                    $condition['_logic'] = 'and';
+                    $map['_complex']     = $condition;
+
+                    $query = $query->where($map);
+
+                } else {
+                    // 如果是传递的数组为 ['id' => 2] 这种形式，则继续保留这种格式
+                    $query = $query->where([$key => $value]);
+                }
+            }
+        }
+
+        return $query;
+    }
 }
