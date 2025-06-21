@@ -31,6 +31,23 @@ class DateHelperTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
+    public function testGetDateTime3(): void
+    {
+        $original = new DateTime("2025-04-10");
+        $actual = DateHelper::getDateTime($original);
+        $expect = new DateTime("2025-04-10T00:00:00.000000+0000");
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testGetDateTime4(): void
+    {
+        $original = new DateTime("2025-04-10");
+        $actual = DateHelper::getDateTime($original);
+
+        $modified = $actual->modify("-1 day");
+        self::assertNotEquals($original, $actual);
+    }
+
     public function testAddDays(): void
     {
         $actual = DateHelper::addDays(new DateTime("2025-04-10"), 1);
