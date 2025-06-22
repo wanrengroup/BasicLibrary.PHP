@@ -10,15 +10,6 @@
 
 namespace WanRen\WorkLayer;
 
-use Closure;
-
-//use think\Collection;
-//use think\db\BaseQuery;
-//use think\db\exception\DataNotFoundException;
-//use think\db\exception\DbException;
-//use think\db\exception\ModelNotFoundException;
-//use think\facade\Db;
-//use think\Model;
 use Think\Exception;
 use Think\Model;
 use WanRen\Data\ArrayHelper;
@@ -46,17 +37,11 @@ use WanRen\IO\LoggerHelper;
  * 2.2->一维数组类型：['id' => 1, 'name' => '张三']。
  * 2.3->索引多维数组类型：[['id','=',5],['name','like','%大%']]。
  * 2.4->复杂的索引多维数组类型：[[['id','=',5],['name','like','小%']],[['grade','=',5],['name','like','%小']]] （最高level的各个元素生成condition的会自动加括号。）
- * 2.5->OR关联多维数组类型：["__or__1"=>['id','=',5],'__or__2'=>['name','like','%大%']]
- * 2.6->复杂的OR条件查询：["__or__1"=>[['id','=',5],['name','like','%小%']],'__or__2'=>[['id','=',6],['name','like','%大%']]]
- * 其生成的sql的where子句为：WHERE ( `id` = 5 AND `name` LIKE '%小%' ) OR ( `id` = 6 AND `name` LIKE '%大%' )
+ * 2.5->OR关联多维数组类型："__or__"=>[['id','=',5],['name','like','%大%']] （各个元素之间是OR关系。）
+ * 2.6->V3.2版本仅支持一组 __or__ 或者 __and__ 作为条件的分隔符。
  *
- * 3->【参数$where的特别说明】：
- * 因为ThinkORM 从3.0.20到 3.0.21版本，对whereOr的支持有所改变：
- * 3.1-> 版本3.0.20之前是：whereOr($where)：$where 会跟外部其他条件进行 OR 连接。
- * 3.1-> 版本3.0.21之后是：whereOr($where)：$where 会跟外部其他条件进行 AND 连接，而$where内部各个子条件才进行 OR 连接。
- * 因此为了避免混淆，遇到Or的情况，建议使用闭包或者拼写字符串的方式进行条件组合。
- *
- *
+ * 3->OR条件的更多说明：
+ * 由于TP以及后来的ThinkORM的变化，建议进行OR条件的查询时，在保证不被SQL注入的情况下，使用字符串的形式进行。
  */
 abstract class AbstractLogic
 {
