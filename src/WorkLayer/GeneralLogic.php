@@ -10,12 +10,10 @@
 
 namespace WanRen\WorkLayer;
 
-use think\Model;
-
 /**
  * 通用的逻辑层类
  * （如果不想创建具体的Model和Logic，就可以使用本通用Logic类；
- * 使用的时候，只要给构造函数传入不带前缀的表名即可(当然也可以传入模型对象)，例如：
+ * 使用的时候，只要给构造函数传入不带前缀的表名即可，例如：
  * $logic  = new GeneralLogic("no_publish_c");）
  */
 class GeneralLogic extends AbstractLogic
