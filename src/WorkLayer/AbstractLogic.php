@@ -139,6 +139,15 @@ abstract class AbstractLogic
             //目前只支持从$options中获取数据库连接配置
             $connection = $connectionOrOptions['connection'] ?? $connectionOrOptions['connectionName'] ?? '';
             $prefix     = $connectionOrOptions['prefix'] ?? $connectionOrOptions['tablePrefix'] ?? '';
+
+            // 尝试从connection中获取数据库表前缀
+            $connectionArray = [];
+            if (is_string($connection)) {
+                $connectionArray = C($connection);
+            }
+            if (empty($prefix) && is_array($connectionArray) && !empty($connectionArray)) {
+                $prefix = $connectionArray['DB_PREFIX'] ?? '';
+            }
         }
 
         //3-> 创建模型对象
@@ -164,59 +173,38 @@ abstract class AbstractLogic
     public function getEntity($where, string $orderBy = "", string $fields = "")
     {
         try {
-            $query  = $this->model->field($fields)->order($orderBy);
-            $query  = $this->prepareWhere($query, $where);
-            $result = $query->find();
-
-            //if ($result_as_array && $result instanceof Model) {
-            //    return $result->toArray();
-            //}
-
-            return $result;
+            $query = $this->model->field($fields)->order($orderBy);
+            $query = $this->prepareWhere($query, $where);
+            return $query->find();
         } catch (Exception $e) {
             LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return null;
         }
     }
-    //
-    ///**
-    // * 获取不包含数据（数据为0或“”），只包含数据结构的空实体。
-    // * @return array
-    // */
-    //public function getEmptyEntity(): array
-    //{
-    //    /** @noinspection all */
-    //    $fields = $this->baseQuery->getFields();
-    //    $entity = [];
-    //    foreach ($fields as $key => $value) {
-    //        //默认字段类型为字符串
-    //        $entity[$key] = "";
-    //
-    //        //获取字段类型
-    //        $fieldType = $value['type'];
-    //
-    //        //1->日期类型默认值设为0000-00-00 00:00:00
-    //        /** @noinspection all */
-    //        if (str_contains($fieldType, 'year') || $fieldType === 'timestamp' ||
-    //            $fieldType == 'datetime' || $fieldType == 'date' || $fieldType == 'time'
-    //        ) {
-    //            $entity[$key] = 0;
-    //        }
-    //
-    //        //2->数字类型默认值设为0
-    //        if (str_contains($fieldType, 'int') || str_contains($fieldType, 'float') ||
-    //            str_contains($fieldType, 'double') || str_contains($fieldType, 'decimal') ||
-    //            str_contains($fieldType, 'bit')
-    //        ) {
-    //            $entity[$key] = 0;
-    //        }
-    //
-    //        //3->其他类型，可以继续补充
-    //        //...
-    //    }
-    //
-    //    return $entity;
-    //}
+
+    /**
+     * 获取不包含数据（数据为0或“”），只包含数据结构的空实体。
+     * （因为TP提供的方法无法获取到字段的数据类型，因此除了主键默认为数字0之外，其他字段都默认为空字符串）
+     * @return array
+     */
+    public function getEmptyEntity(): array
+    {
+        $fields = $this->model->getDbFields();
+        $pk     = $this->model->getPk();
+
+        $entity = [];
+        foreach ($fields as $value) {
+            //默认字段类型为字符串
+            $entity[$value] = "";
+
+            //如果是主键，则默认值设为0
+            if ($value === $pk) {
+                $entity[$value] = 0;
+            }
+        }
+
+        return $entity;
+    }
 
     /**
      * 获取数据条数
@@ -309,15 +297,9 @@ abstract class AbstractLogic
 
         //3-> 获取数据
         try {
-            $query  = $this->getModel()->field($fields)->order($orderBy)->limit($limit);
-            $query  = $this->prepareWhere($query, $where);
-            $result = $query->select();
-
-            if ($result_as_array && $result instanceof Collection) {
-                return $result->toArray();
-            }
-
-            return $result;
+            $query = $this->getModel()->field($fields)->order($orderBy)->limit($limit);
+            $query = $this->prepareWhere($query, $where);
+            return $query->select();
         } catch (Exception $e) {
             LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return null;
@@ -382,75 +364,52 @@ abstract class AbstractLogic
     {
         return $this->model->add($data);
     }
-    //
-    ///**
-    // * 更新数据
-    // * @param $data array 要更新的实体数据
-    // * @return int|bool 返回影响数据的条数，没修改任何数据返回 0，失败返回false
-    // */
-    //public function updateEntity(array $data): int|bool
-    //{
-    //    try {
-    //        if ($this->useIsolatedModeInOperations) {
-    //            $this->resetBaseQuery();
-    //        }
-    //
-    //        return $this->baseQuery->update($data);
-    //    } catch (DbException $e) {
-    //        LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
-    //        return false;
-    //    }
-    //}
-    //
-    ///**
-    // * 保存数据，如果主键存在数据，则更新，否则添加（本方法会自动识别主键）
-    // * 约定：需要数据库表中有自增的字段（推荐使用id作为名称），并且此字段要设为主键。
-    // * （兼容addEntity和updateEntity两个方法）
-    // * @param $data array 要保存的实体数据
-    // * @return int|bool 新增成功返回数据的主键值,失败返回false; 更新成功返回影响数据的条数,没修改任何数据返回 0.
-    // */
-    //public function saveEntity(array $data): int|bool
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $pks = $this->baseQuery->getPk();
-    //
-    //    $is_insert = false;
-    //    if (empty($pks)) {
-    //        $is_insert = true;
-    //    }
-    //
-    //    ////TODO:xiedali@2025/05/06 向联合主键的表中添加数据时，究竟insert还是update？逻辑还需要再优化。
-    //    //if (is_array($pks)) {
-    //    //    foreach ($pks as $item) {
-    //    //        if (!isset($data, $item)) {
-    //    //            $is_insert = true;
-    //    //            break;
-    //    //        }
-    //    //    }
-    //    //}
-    //
-    //    if (is_string($pks)) {
-    //        if (isset($data[$pks])) {
-    //            //如果数据包含主键信息，并且主键值为空，亦为添加状态
-    //            $pk_value = $data[$pks];
-    //            if (empty($pk_value)) {
-    //                $is_insert = true;
-    //            }
-    //        } else {
-    //            //如果数据不包含主键信息，则为添加状态
-    //            $is_insert = true;
-    //        }
-    //    }
-    //
-    //    if ($is_insert) {
-    //        return $this->addEntity($data);
-    //    }
-    //
-    //    return $this->updateEntity($data);
-    //}
+
+    /**
+     * 更新数据
+     * @param $data array 要更新的实体数据
+     * @return int|bool 返回影响数据的条数，没修改任何数据返回 0，失败返回false
+     */
+    public function updateEntity(array $data)
+    {
+        return $this->model->save($data);
+    }
+
+    /**
+     * 保存数据，如果主键存在数据，则更新，否则添加（本方法会自动识别主键）
+     * 约定：需要数据库表中有自增的字段（推荐使用id作为名称），并且此字段要设为主键。
+     * （兼容addEntity和updateEntity两个方法）
+     * @param $data array 要保存的实体数据
+     * @return int|bool 新增成功返回数据的主键值,失败返回false; 更新成功返回影响数据的条数,没修改任何数据返回 0.
+     */
+    public function saveEntity(array $data)
+    {
+        $pks = $this->model->getPk();
+
+        $is_insert = false;
+        if (empty($pks)) {
+            $is_insert = true;
+        }
+
+        if (is_string($pks)) {
+            if (isset($data[$pks])) {
+                //如果数据包含主键信息，并且主键值为空，亦为添加状态
+                $pk_value = $data[$pks];
+                if (empty($pk_value)) {
+                    $is_insert = true;
+                }
+            } else {
+                //如果数据不包含主键信息，则为添加状态
+                $is_insert = true;
+            }
+        }
+
+        if ($is_insert) {
+            return $this->addEntity($data);
+        }
+
+        return $this->updateEntity($data);
+    }
     //
     ///**
     // * 保存数据，并返回结构化结果。如果主键存在数据，则更新，否则添加

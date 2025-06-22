@@ -155,22 +155,20 @@ class WhereHelper
     /**
      * 查询字段为NULL
      * @param string $fieldName
-     * @return string
+     * @return array
      */
-    public static function Null(string $fieldName): string
+    public static function Null(string $fieldName): array
     {
-        //return array($fieldName, "NULL", NULL);
-        return $fieldName . " IS NULL";
+        return array($fieldName, 'EXP', 'IS NULL');
     }
 
     /**
      * 查询字段不为NULL
      * @param string $fieldName
-     * @return string
+     * @return array
      */
-    public static function NotNull(string $fieldName): string
+    public static function NotNull(string $fieldName): array
     {
-        //return array($fieldName, "NOT NULL", NULL);
-        return $fieldName . " IS NOT NULL";
+        return array($fieldName, 'EXP', 'IS NOT NULL');
     }
 }

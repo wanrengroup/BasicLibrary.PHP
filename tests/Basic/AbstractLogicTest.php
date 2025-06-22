@@ -19,7 +19,6 @@ use WanRen\Data\RandHelper;
 // |:DESCRIPTION:| 需要先配置数据库表，表结构为：`tests/.SQLs/m_abstract_logic_testing.sql`
 // +--------------------------------------------------------------------------
 
-
 class AbstractLogicTest extends LocalTestCase
 {
     private GeneralLogic $logic;
@@ -215,106 +214,78 @@ class AbstractLogicTest extends LocalTestCase
 
         self::assertEquals($expect, $actual);
     }
-    //
-    //public function testUpdate(): void
-    //{
-    //    $logic = new GeneralLogic(self::$targetTable, true);
-    //
-    //    $this->_testUpdate($logic);
-    //}
-    //
-    //public function testUpdateMultiNormal(): void
-    //{
-    //    $logic = new GeneralLogic(self::$targetTable);
-    //
-    //    $listGotten = $this->_testUpdateMulti($logic);
-    //
-    //    /**
-    //     * 如果使用非隔离模式，则会导致结果错误（虽然代码修改了，但数据库并没有更新）。
-    //     */
-    //    if ($listGotten && count($listGotten) >= 1) {
-    //        $first  = $listGotten[0];
-    //        $expect = "testA";
-    //        $actual = $first["name"];
-    //        self::assertEquals($expect, $actual);
-    //        $actual = $first["grade"];
-    //        self::assertNull($actual);
-    //
-    //        $second = $listGotten[1];
-    //        $expect = "testB";
-    //        $actual = $second["name"];
-    //        self::assertEquals($expect, $actual);
-    //        $actual = $second["grade"];
-    //        self::assertNull($actual);
-    //    }
-    //}
-    //
-    //public function testUpdateMultiIsolate(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $listGotten = $this->_testUpdateMulti($logic);
-    //
-    //    if ($listGotten && count($listGotten) >= 1) {
-    //        $first  = $listGotten[0];
-    //        $expect = "山东解大劦1";
-    //        $actual = $first["name"];
-    //        self::assertEquals($expect, $actual);
-    //        $expect = 3;
-    //        $actual = $first["grade"];
-    //        self::assertEquals($expect, $actual);
-    //
-    //        $second = $listGotten[1];
-    //        $expect = "山东解大劦2";
-    //        $actual = $second["name"];
-    //        self::assertEquals($expect, $actual);
-    //        $expect = 4;
-    //        $actual = $second["grade"];
-    //        self::assertEquals($expect, $actual);
-    //    }
-    //}
-    //
-    //public function testSave(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $mobile1 = RandHelper::generateRandomString(11);
-    //    $mobile2 = RandHelper::generateRandomString(11);
-    //    $entity1 = ["name" => "test1", "mobile" => $mobile1, "grade" => 2, "create_date" => date("Y-m-d H:i:s")];
-    //    $entity2 = ["name" => "test2", "mobile" => $mobile2, "grade" => 3, "create_date" => date("Y-m-d H:i:s")];
-    //
-    //    $listGotten = $logic->addEntities($entity1, $entity2);
-    //    $expect     = 2;
-    //    $actual     = $listGotten;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $first = $logic->getEntity(["mobile" => $mobile1]);
-    //
-    //    $first["name"]  = "山东解大劦A";
-    //    $first["grade"] = 5;
-    //
-    //    $updated = $logic->saveEntity($first);
-    //
-    //    $expect = 1;
-    //    $actual = $updated;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $gotten = $logic->getEntity(["mobile" => $mobile1]);
-    //
-    //    $expect = "山东解大劦A";
-    //    $actual = $gotten["name"];
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $mobile3 = RandHelper::generateRandomString(11);
-    //    $entity3 = ["name" => "testChina", "mobile" => $mobile3, "grade" => 2, "create_date" => date("Y-m-d H:i:s")];
-    //
-    //    $saved  = $logic->saveEntity($entity3);
-    //    $expect = 1;
-    //    if ($saved) {
-    //        $actual = 1;
-    //    }
-    //    self::assertEquals($expect, $actual);
-    //}
+
+    public function testUpdate(): void
+    {
+        $this->_testUpdate($this->logic);
+    }
+
+    public function testUpdateMultiIsolate(): void
+    {
+        $logic = $this->logic;
+
+        $listGotten = $this->_testUpdateMulti($logic);
+
+        if ($listGotten && count($listGotten) >= 1) {
+            $first  = $listGotten[0];
+            $expect = "山东解大劦1";
+            $actual = $first["name"];
+            self::assertEquals($expect, $actual);
+            $expect = 3;
+            $actual = $first["grade"];
+            self::assertEquals($expect, $actual);
+
+            $second = $listGotten[1];
+            $expect = "山东解大劦2";
+            $actual = $second["name"];
+            self::assertEquals($expect, $actual);
+            $expect = 4;
+            $actual = $second["grade"];
+            self::assertEquals($expect, $actual);
+        }
+    }
+
+    public function testSave(): void
+    {
+        $logic = $this->logic;
+
+        $mobile1 = RandHelper::generateRandomString(11);
+        $mobile2 = RandHelper::generateRandomString(11);
+        $entity1 = ["name" => "test1", "mobile" => $mobile1, "grade" => 2, "create_date" => date("Y-m-d H:i:s")];
+        $entity2 = ["name" => "test2", "mobile" => $mobile2, "grade" => 3, "create_date" => date("Y-m-d H:i:s")];
+
+        $listGotten = $logic->addEntities($entity1, $entity2);
+        $expect     = 2;
+        $actual     = $listGotten;
+        self::assertEquals($expect, $actual);
+
+        $first = $logic->getEntity(["mobile" => $mobile1]);
+
+        $first["name"]  = "山东解大劦A";
+        $first["grade"] = 5;
+
+        $updated = $logic->saveEntity($first);
+
+        $expect = 1;
+        $actual = $updated;
+        self::assertEquals($expect, $actual);
+
+        $gotten = $logic->getEntity(["mobile" => $mobile1]);
+
+        $expect = "山东解大劦A";
+        $actual = $gotten["name"];
+        self::assertEquals($expect, $actual);
+
+        $mobile3 = RandHelper::generateRandomString(11);
+        $entity3 = ["name" => "testChina", "mobile" => $mobile3, "grade" => 2, "create_date" => date("Y-m-d H:i:s")];
+
+        $saved  = $logic->saveEntity($entity3);
+        $expect = 1;
+        if ($saved) {
+            $actual = 1;
+        }
+        self::assertEquals($expect, $actual);
+    }
 
     public function testGet(): void
     {
@@ -334,36 +305,35 @@ class AbstractLogicTest extends LocalTestCase
         self::assertEquals($expect, $actual);
     }
 
-    //public function testGetMultiIsolate(): void
-    //{
-    //    [$mobile1, $result1, $mobile2, $result2] = $this->_testGetMulti($this->logicIsolated);
-    //
-    //    $expect = $mobile1;
-    //    $actual = $result1["mobile"];
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $expect = $mobile2;
-    //    $actual = $result2["mobile"];
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testGetMultiNormal(): void
-    //{
-    //    $logic = new GeneralLogic(self::$targetTable);
-    //
-    //    [$mobile1, $result1, $mobile2, $result2] = $this->_testGetMulti($logic);
-    //
-    //    /** @noinspection all */
-    //    $nonUsing = $mobile2;
-    //
-    //    $expect = $mobile1;
-    //    $actual = $result1["mobile"];
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $expect = null;
-    //    $actual = $result2;
-    //    self::assertEquals($expect, $actual);
-    //}
+    public function testGetMultiIsolate(): void
+    {
+        [$mobile1, $result1, $mobile2, $result2] = $this->_testGetMulti($this->logic);
+
+        $expect = $mobile1;
+        $actual = $result1["mobile"];
+        self::assertEquals($expect, $actual);
+
+        $expect = $mobile2;
+        $actual = $result2["mobile"];
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testGetEmpty(): void
+    {
+        $result = $this->logic->getEmptyEntity();
+
+        print_r("──Gotten 数据结果───────────────────────────────────" . PHP_EOL);
+        print_r($result);
+        print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
+
+        $expect = "";
+        $actual = $result["mobile"];
+        self::assertEquals($expect, $actual);
+
+        $expect = 0;
+        $actual = $result["id"];
+        self::assertEquals($expect, $actual);
+    }
 
     public function testCount(): void
     {
@@ -480,16 +450,18 @@ class AbstractLogicTest extends LocalTestCase
         $expect  = 1;
         self::assertEquals($expect, $actual);
     }
-    //
-    //public function testAnotherDBConnection(): void
-    //{
-    //    $options = ["connection" => "biz"];
-    //    $logic   = new GeneralLogic("student", true, $options);
-    //
-    //    $where[] = ["id", ">", 0];
-    //
-    //    $actual = $logic->getEntityCount($where);
-    //    $expect = 5;
-    //    self::assertEquals($expect, $actual);
-    //}
+
+    public function testAnotherDBConnection(): void
+    {
+        $options["connection"] = "DB_CONFIG3";
+        //// 如果connection配置中，已经配置了DB_PREFIX，则可以不用再单独配置prefix
+        //$options["prefix"]     = C("DB_CONFIG3.DB_PREFIX");
+        $logic                 = new GeneralLogic("student", $options);
+
+        $where[] = ["id", "GT", 0];
+
+        $actual = $logic->getEntityCount($where);
+        $expect = 5;
+        self::assertEquals($expect, $actual);
+    }
 }
