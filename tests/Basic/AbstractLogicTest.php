@@ -174,58 +174,47 @@ class AbstractLogicTest extends LocalTestCase
         $this->logic = new GeneralLogic(self::$targetTable);
     }
 
-    //public function testAdd(): void
-    //{
-    //    $oldCount = $this->logicIsolated->getEntityCount();
-    //    $entity   = ["name" => "test1", "mobile" => "18345678901", "create_date" => date("Y-m-d H:i:s")];
-    //    $result   = $this->logicIsolated->addEntity($entity);
-    //    $newCount = $this->logicIsolated->getEntityCount();
-    //    $expect   = $oldCount + 1;
-    //    $actual   = $newCount;
-    //
-    //    print_r("──新增数据结果───────────────────────────────────" . PHP_EOL);
-    //    print_r($result);
-    //    print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
-    //
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testAddMultiIsolate(): void
-    //{
-    //    [$oldCount, $newCount] = $this->_testAddMulti($this->logicIsolated);
-    //
-    //    $expect = $oldCount + 2;
-    //    $actual = $newCount;
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testAddMultiNormal(): void
-    //{
-    //    $logic = new GeneralLogic(self::$targetTable);
-    //
-    //    [$oldCount, $newCount] = $this->_testAddMulti($logic);
-    //
-    //    $expect = $oldCount + 2;
-    //    $actual = $newCount;
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testAddEntities(): void
-    //{
-    //    $oldCount = $this->logicIsolated->getEntityCount();
-    //
-    //    $result   = $this->_addEntities();
-    //    $newCount = $this->logicIsolated->getEntityCount();
-    //
-    //    $expect = $oldCount + 4;
-    //    $actual = $newCount;
-    //
-    //    print_r("──Gotten 数据结果───────────────────────────────────" . PHP_EOL);
-    //    print_r($result);
-    //    print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
-    //
-    //    self::assertEquals($expect, $actual);
-    //}
+    public function testAdd(): void
+    {
+        $oldCount = $this->logic->getEntityCount();
+        $entity   = ["name" => "test1", "mobile" => "18345678901", "create_date" => date("Y-m-d H:i:s")];
+        $result   = $this->logic->addEntity($entity);
+        $newCount = $this->logic->getEntityCount();
+        $expect   = $oldCount + 1;
+        $actual   = $newCount;
+
+        print_r("──新增数据结果───────────────────────────────────" . PHP_EOL);
+        print_r($result);
+        print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
+
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testAddMulti(): void
+    {
+        [$oldCount, $newCount] = $this->_testAddMulti($this->logic);
+
+        $expect = $oldCount + 2;
+        $actual = $newCount;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testAddEntities(): void
+    {
+        $oldCount = $this->logic->getEntityCount();
+
+        $result   = $this->_addEntities();
+        $newCount = $this->logic->getEntityCount();
+
+        $expect = $oldCount + 4;
+        $actual = $newCount;
+
+        print_r("──Gotten 数据结果───────────────────────────────────" . PHP_EOL);
+        print_r($result);
+        print_r(PHP_EOL . "──分隔符───────────────────────────────────" . PHP_EOL);
+
+        self::assertEquals($expect, $actual);
+    }
     //
     //public function testUpdate(): void
     //{
@@ -380,7 +369,7 @@ class AbstractLogicTest extends LocalTestCase
     {
         $logic = $this->logic;
 
-        $where[] = ["id", ">", 0];
+        $where[] = ["id", "gt", 0];
         $logic->deleteEntities($where);
         $this->_addEntities();
 
@@ -388,109 +377,109 @@ class AbstractLogicTest extends LocalTestCase
         $expect = 4;
         self::assertEquals($expect, $actual);
 
-        $where[] = ["grade", "=", 2];
+        $where[] = ["grade", "eq", 2];
         //$where[] = ["mobile", "=", "12334567890"];
         $actual = $logic->getEntityCount($where);
         $expect = 3;
         self::assertEquals($expect, $actual);
 
-        $condition[] = ["mobile", "=", "12334567890"];
+        $condition[] = ["mobile", "eq", "12334567890"];
         $actual      = $logic->getEntityCount($condition);
         $expect      = 2;
         self::assertEquals($expect, $actual);
     }
 
 
-    //public function testMax(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //    $this->_addEntities();
-    //
-    //    $actual = $logic->getEntityMax("grade");
-    //    $expect = 3;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $where[] = ["grade", "=", 2];
-    //    $actual  = $logic->getEntityMax("grade", $where);
-    //    $expect  = 2;
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testMin(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //    $this->_addEntities();
-    //
-    //    $actual = $logic->getEntityMin("grade");
-    //    $expect = 2;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $where[] = ["grade", "=", 3];
-    //    $actual  = $logic->getEntityMin("grade", $where);
-    //    $expect  = 3;
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testAvg(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //    $this->_addEntities();
-    //
-    //    $actual = $logic->getEntityAvg("grade");
-    //    $expect = 2.25;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $where[] = ["mobile", "=", "12334567890"];
-    //    $actual  = $logic->getEntityAvg("grade", $where);
-    //    $expect  = 2.5;
-    //    self::assertEquals($expect, $actual);
-    //}
-    //
-    //public function testSum(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //    $this->_addEntities();
-    //
-    //    $actual = $logic->getEntitySum("grade");
-    //    $expect = 9;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $where[] = ["grade", "=", 2];
-    //    $actual  = $logic->getEntitySum("grade", $where);
-    //    $expect  = 6;
-    //    self::assertEquals($expect, $actual);
-    //}
+    public function testMax(): void
+    {
+        $logic = $this->logic;
 
-    //public function testDelete(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //
-    //    $actual = $logic->getEntityCount();
-    //    $expect = 0;
-    //    self::assertEquals($expect, $actual);
-    //
-    //    $this->_addEntities();
-    //    $where[] = ["grade", "=", 2];
-    //    $where[] = ["mobile", "=", "12334567890"];
-    //    $actual  = $logic->deleteEntities($where);
-    //    $expect  = 1;
-    //    self::assertEquals($expect, $actual);
-    //}
+        $where[] = ["id", "gt", 0];
+        $logic->deleteEntities($where);
+        $this->_addEntities();
+
+        $actual = $logic->getEntityMax("grade");
+        $expect = 3;
+        self::assertEquals($expect, $actual);
+
+        $where[] = ["grade", "eq", 2];
+        $actual  = $logic->getEntityMax("grade", $where);
+        $expect  = 2;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testMin(): void
+    {
+        $logic = $this->logic;
+
+        $where[] = ["id", "gt", 0];
+        $logic->deleteEntities($where);
+        $this->_addEntities();
+
+        $actual = $logic->getEntityMin("grade");
+        $expect = 2;
+        self::assertEquals($expect, $actual);
+
+        $where[] = ["grade", "eq", 3];
+        $actual  = $logic->getEntityMin("grade", $where);
+        $expect  = 3;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testAvg(): void
+    {
+        $logic = $this->logic;
+
+        $where[] = ["id", "gt", 0];
+        $logic->deleteEntities($where);
+        $this->_addEntities();
+
+        $actual = $logic->getEntityAvg("grade");
+        $expect = 2.25;
+        self::assertEquals($expect, $actual);
+
+        $where[] = ["mobile", "eq", "12334567890"];
+        $actual  = $logic->getEntityAvg("grade", $where);
+        $expect  = 2.5;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testSum(): void
+    {
+        $logic = $this->logic;
+
+        $where[] = ["id", "gt", 0];
+        $logic->deleteEntities($where);
+        $this->_addEntities();
+
+        $actual = $logic->getEntitySum("grade");
+        $expect = 9;
+        self::assertEquals($expect, $actual);
+
+        $where[] = ["grade", "eq", 2];
+        $actual  = $logic->getEntitySum("grade", $where);
+        $expect  = 6;
+        self::assertEquals($expect, $actual);
+    }
+
+    public function testDelete(): void
+    {
+        $logic = $this->logic;
+
+        $where[] = ["id", "gt", 0];
+        $logic->deleteEntities($where);
+
+        $actual = $logic->getEntityCount();
+        $expect = 0;
+        self::assertEquals($expect, $actual);
+
+        $this->_addEntities();
+        $where[] = ["grade", "eq", 2];
+        $where[] = ["mobile", "eq", "12334567890"];
+        $actual  = $logic->deleteEntities($where);
+        $expect  = 1;
+        self::assertEquals($expect, $actual);
+    }
     //
     //public function testAnotherDBConnection(): void
     //{
@@ -503,31 +492,4 @@ class AbstractLogicTest extends LocalTestCase
     //    $expect = 5;
     //    self::assertEquals($expect, $actual);
     //}
-
-    /**
-     * 测试 WhereOr条件
-     * @return void
-     */
-    //public function testWhereOr(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    //1->清除所有数据
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //
-    //    //2->添加测试数据
-    //    $this->_addEntities();
-    //
-    //    //3->测试WhereOr条件
-    //    $where["OR"] = [
-    //        ["mobile", "=", "12334567891"],
-    //        ["grade", "=", "3"],
-    //    ];
-    //    $actual      = $logic->getEntityCount($where);
-    //    $expect      = 4;
-    //    self::assertEquals($expect, $actual);
-    //}
-
-
 }

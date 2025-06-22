@@ -18,34 +18,33 @@ class WhereHelper
 {
     public static function Equal(string $fieldName, $value): array
     {
-        return array($fieldName, "=", $value);
+        return array($fieldName, "EQ", $value);
     }
 
     public static function NotEqual(string $fieldName, $value): array
     {
-        return array($fieldName, "<>", $value);
+        return array($fieldName, "NEQ", $value);
     }
 
     public static function GreaterThan(string $fieldName, $value): array
     {
-        return array($fieldName, ">", $value);
+        return array($fieldName, "GT", $value);
     }
 
     public static function NotGreaterThan(string $fieldName, $value): array
     {
-        return array($fieldName, "<=", $value);
+        return array($fieldName, "ELT", $value);
     }
 
     public static function LessThan(string $fieldName, $value): array
     {
-        return array($fieldName, "<", $value);
+        return array($fieldName, "LT", $value);
     }
 
     public static function NotLessThan(string $fieldName, $value): array
     {
-        return array($fieldName, ">=", $value);
+        return array($fieldName, "EGT", $value);
     }
-
 
 
     /**
@@ -54,7 +53,7 @@ class WhereHelper
      * @param array|string $values 数组或者用逗号分隔的字符串
      * @return array
      */
-    public static function In(string $fieldName,  $values): array
+    public static function In(string $fieldName, $values): array
     {
         return array($fieldName, "IN", $values);
     }
@@ -65,7 +64,7 @@ class WhereHelper
      * @param array|string $values 数组或者用逗号分隔的字符串
      * @return array
      */
-    public static function NotIn(string $fieldName,  $values): array
+    public static function NotIn(string $fieldName, $values): array
     {
         return array($fieldName, "NOT IN", $values);
     }
@@ -107,7 +106,7 @@ class WhereHelper
             $value = "%" . $value . "%";
         }
 
-        return array($fieldName, "NOT LIKE", $value);
+        return array($fieldName, "NOTLIKE", $value);
     }
 
     /**
@@ -124,7 +123,7 @@ class WhereHelper
         $whereOr[] = [$fieldName, 'LIKE', $item . $separator . '%'];
         $whereOr[] = [$fieldName, 'LIKE', '%' . $separator . $item . $separator . '%'];
         $whereOr[] = [$fieldName, 'LIKE', '%' . $separator . $item];
-        $whereOr[] = [$fieldName, '=', $item];
+        $whereOr[] = [$fieldName, 'EQ', $item];
 
         return $whereOr;
     }
@@ -156,20 +155,22 @@ class WhereHelper
     /**
      * 查询字段为NULL
      * @param string $fieldName
-     * @return array
+     * @return string
      */
-    public static function Null(string $fieldName): array
+    public static function Null(string $fieldName): string
     {
-        return array($fieldName, "NULL", NULL);
+        //return array($fieldName, "NULL", NULL);
+        return $fieldName . " IS NULL";
     }
 
     /**
      * 查询字段不为NULL
      * @param string $fieldName
-     * @return array
+     * @return string
      */
-    public static function NotNull(string $fieldName): array
+    public static function NotNull(string $fieldName): string
     {
-        return array($fieldName, "NOT NULL", NULL);
+        //return array($fieldName, "NOT NULL", NULL);
+        return $fieldName . " IS NOT NULL";
     }
 }

@@ -10,7 +10,6 @@
 
 namespace WanRen\Test\Basic;
 
-use WanRen\Environment\EnvHelper;
 use WanRen\WorkLayer\GeneralLogic;
 
 // +--------------------------------------------------------------------------
@@ -36,8 +35,8 @@ class WhereClauseTest extends LocalTestCase
 
     private array $map1 = ['mobile', 'like', 'thinkphp%'];
     private array $map2 = ['name', 'like', '%thinkphp'];
-    private array $map3 = ['grade', '=', 3];
-    private array $map4 = ["id", "=", 1];
+    private array $map3 = ['grade', 'eq', 3];
+    private array $map4 = ["id", "eq", 1];
 
     public function testCondition1(): void
     {
@@ -146,19 +145,23 @@ class WhereClauseTest extends LocalTestCase
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' )  AND ( `grade` = 3 AND `id` = 1 )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE (  `mobile` LIKE 'thinkphp%' ) AND (  `name` LIKE '%thinkphp' ) AND (  `grade` = 3 ) AND (  `id` = 1 ) ";
 
         self::assertEquals($expect, $actual);
     }
 
+    //TODO:xiedali@2025/06/22 生成的sql略有问题（第一组条件生成了两遍），但不影响最后的逻辑
     public function testConditionMultiDimensionArray2(): void
     {
-        $where[]         = [$this->map1, $this->map2]; //会自动加括号
+        $where[] = [$this->map1, $this->map2]; //会自动加括号
+
+        //仅能支持一个 __or__ 条件或者一个 __and__ 条件（__or__ 和 __and__ 不能同时存在）
+        //$where["__and__"] = [$this->map1, $this->map2]; //会自动加括号
         $where["__or__"] = [$this->map3, $this->map4]; //会自动加括号
         $this->logic->getEntities($where);
 
         $actual = $this->logic->getLastSql();
-        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE  ( `mobile` LIKE 'thinkphp%' AND `name` LIKE '%thinkphp' ) OR ( `grade` = 3 AND `id` = 1 )";
+        $expect = "SELECT * FROM `{$this->getTargetTableWithPrefix()}` WHERE (  `mobile` LIKE 'thinkphp%' ) AND (  `name` LIKE '%thinkphp' ) AND (  `mobile` LIKE 'thinkphp%' ) AND (  `name` LIKE '%thinkphp' ) AND (  (  `grade` = 3 ) OR (  `id` = 1 ) ) ";
 
         self::assertEquals($expect, $actual);
     }

@@ -164,9 +164,8 @@ abstract class AbstractLogic
     public function getEntity($where, string $orderBy = "", string $fields = "")
     {
         try {
-            $query = $this->model->field($fields)->order($orderBy);
-            $query = $this->prepareWhere($query, $where);
-            //$query  = $query->where($where);
+            $query  = $this->model->field($fields)->order($orderBy);
+            $query  = $this->prepareWhere($query, $where);
             $result = $query->find();
 
             //if ($result_as_array && $result instanceof Model) {
@@ -218,96 +217,76 @@ abstract class AbstractLogic
     //
     //    return $entity;
     //}
-    //
-    ///**
-    // * 获取数据条数
-    // * @param string|Closure|array $where
-    // * @param string $field
-    // * @return int|null
-    // */
-    //public function getEntityCount(string|Closure|array $where = [], string $field = ""): ?int
-    //{
-    //    if (empty($field)) {
-    //        $field = "*";
-    //    }
-    //
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $query = $this->baseQuery;
-    //    $query = $this->prepareWhere($query, $where);
-    //    return $query->count($field);
-    //}
-    //
-    ///**
-    // * 获取数据合计值
-    // * @param string $field
-    // * @param string|Closure|array $where
-    // * @return float
-    // */
-    //public function getEntitySum(string $field = "", string|Closure|array $where = []): float
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $query = $this->baseQuery;
-    //    $query = $this->prepareWhere($query, $where);
-    //    return $query->sum($field);
-    //}
-    //
-    ///**
-    // * 获取数据平均值
-    // * @param string $field
-    // * @param string|Closure|array $where
-    // * @return float
-    // */
-    //public function getEntityAvg(string $field, string|Closure|array $where = []): float
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $query = $this->baseQuery;
-    //    $query = $this->prepareWhere($query, $where);
-    //    return $query->avg($field);
-    //}
-    //
-    ///**
-    // * 获取数据最大值
-    // * @param string $field
-    // * @param string|Closure|array $where
-    // * @return float
-    // */
-    //public function getEntityMax(string $field, string|Closure|array $where = []): float
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $query = $this->baseQuery;
-    //    $query = $this->prepareWhere($query, $where);
-    //    return $query->max($field);
-    //}
-    //
-    ///**
-    // * 获取数据最小值
-    // * @param string $field
-    // * @param string|Closure|array $where
-    // * @return float
-    // */
-    //public function getEntityMin(string $field, string|Closure|array $where = []): float
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    $query = $this->baseQuery;
-    //    $query = $this->prepareWhere($query, $where);
-    //    return $query->min($field);
-    //}
-    //
+
+    /**
+     * 获取数据条数
+     * @param string|array $where
+     * @param string $field
+     * @return int|null
+     */
+    public function getEntityCount($where = [], string $field = ""): ?int
+    {
+        if (empty($field)) {
+            $field = "*";
+        }
+
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->count($field);
+    }
+
+    /**
+     * 获取数据合计值
+     * @param string $field
+     * @param string|array $where
+     * @return float
+     */
+    public function getEntitySum(string $field = "", $where = []): float
+    {
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->sum($field);
+    }
+
+    /**
+     * 获取数据平均值
+     * @param string $field
+     * @param string|array $where
+     * @return float
+     */
+    public function getEntityAvg(string $field, $where = []): float
+    {
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->avg($field);
+    }
+
+    /**
+     * 获取数据最大值
+     * @param string $field
+     * @param string|array $where
+     * @return float
+     */
+    public function getEntityMax(string $field, $where = []): float
+    {
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->max($field);
+    }
+
+    /**
+     * 获取数据最小值
+     * @param string $field
+     * @param string|array $where
+     * @return float
+     */
+    public function getEntityMin(string $field, $where = []): float
+    {
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->min($field);
+    }
+
     /**
      * 获取数据列表
      * @param string|array $where
@@ -339,7 +318,7 @@ abstract class AbstractLogic
             }
 
             return $result;
-        } catch (DataNotFoundException|ModelNotFoundException|DbException $e) {
+        } catch (Exception $e) {
             LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
             return null;
         }
@@ -489,45 +468,43 @@ abstract class AbstractLogic
     //    return fail('保存失败');
     //}
     //
-    ///**
-    // * 批量保存数据，如果主键存在数据，则更新，否则添加
-    // * @param array $dataList 要保存的多个实体数据（多个数据之间用逗号分隔）；每个元素本身为一个数组。
-    // * @return int 添加成功的条数
-    // */
-    //public function addEntities(array ...$dataList): int
-    //{
-    //    if ($this->useIsolatedModeInOperations) {
-    //        $this->resetBaseQuery();
-    //    }
-    //
-    //    return $this->baseQuery->insertAll($dataList);
-    //}
-    //
-    ///**
-    // * 删除数据
-    // * @param string|Closure|array $where
-    // * @return int|bool 成功删除的条数; 失败返回false
-    // */
-    //public function deleteEntities(string|Closure|array $where): int|bool
-    //{
-    //    //为了防止误操作，这里不允许删除所有数据
-    //    if (empty($where)) {
-    //        return false;
-    //    }
-    //
-    //    try {
-    //        if ($this->useIsolatedModeInOperations) {
-    //            $this->resetBaseQuery();
-    //        }
-    //
-    //        $query = $this->baseQuery;
-    //        $query = $this->prepareWhere($query, $where);
-    //        return $query->delete();
-    //    } catch (DbException $e) {
-    //        LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
-    //        return false;
-    //    }
-    //}
+    /**
+     * 批量保存数据，如果主键存在数据，则更新，否则添加
+     * @param array $dataList 要保存的多个实体数据（多个数据之间用逗号分隔）；每个元素本身为一个数组。
+     * @return int 返回影响数据的条数
+     */
+    public function addEntities(array ...$dataList): int
+    {
+        //由于系统提供的批量添加方法addALL()，返回的结果不准确（返回的本次插入的第一条的主键值），所以这里自己实现批量添加
+        //return $this->getModel()->addAll($dataList);
+
+        $rowCountEffected = 0;
+        foreach ($dataList as $data) {
+            $currentResult = $this->addEntity($data);
+            if ($currentResult) {
+                $rowCountEffected++;
+            }
+        }
+
+        return $rowCountEffected;
+    }
+
+    /**
+     * 删除数据
+     * @param string|array $where
+     * @return int|bool 成功删除的条数; 失败返回false
+     */
+    public function deleteEntities($where)
+    {
+        //为了防止误操作，这里不允许删除所有数据
+        if (empty($where)) {
+            return false;
+        }
+
+        $query = $this->getModel();
+        $query = $this->prepareWhere($query, $where);
+        return $query->delete();
+    }
     //
     //
     ///**
@@ -627,20 +604,22 @@ abstract class AbstractLogic
 
     private function convertConditionsFormat(array $value): array
     {
-        $map = [];
+        $arrayDimension = ArrayHelper::getDimensionCount($value);
+        $isIndex        = ArrayHelper::isIndex($value);
+        $arrayItemCount = count($value);
 
-        if (ArrayHelper::getDimensionCount($value) >= 2 &&
-            ArrayHelper::isIndex($value) &&
-            count($value) > 0 &&
-            gettype($value[0]) === 'string') {
+        //要判定是 类型：['mobile', 'like', 'thinkphp%'] 这种形式的数组
+        //还是 类型：[['mobile', 'like', 'thinkphp%'], ['email', 'like', 'thinkphp%']] 这种形式的数组
 
+        if ($arrayDimension >= 2 && $isIndex && $arrayItemCount > 0 && is_array($value[0])) {
+            $map = [];
             foreach ($value as $item) {
                 $map[] = $this->convertConditionFormat($item);
             }
 
             return $map;
-        }else{
-            return convertConditionFormat($value);
+        } else {
+            return $this->convertConditionFormat($value);
         }
     }
 
@@ -687,9 +666,8 @@ abstract class AbstractLogic
         //判断标准：一维索引数组，并且数组第一个元素是字符串
         if (ArrayHelper::getDimensionCount($where) <= 2 &&
             ArrayHelper::isIndex($where) &&
-            count($where) > 0 &&
-            gettype($where[0]) === 'string') {
-
+            count($where) > 0 && gettype($where[0]) === 'string') {
+            //转成标准的where条件数组（每个条件为where数组的一个元素），交由后面的逻辑统一处理
             $where = [$where];
         }
 
@@ -700,7 +678,7 @@ abstract class AbstractLogic
             //1->如果是索引数组，则肯定多个条件全部为AND关系
             // 对 ['mobile', 'like', 'thinkphp%'] 这种形式array类型的value进行解析处理
             if (is_numeric($key)) {
-                $map   = $this->convertConditionFormat($value);
+                $map   = $this->convertConditionsFormat($value);
                 $query = $query->where($map);
             }
 
@@ -711,11 +689,7 @@ abstract class AbstractLogic
                         $value = [$value];
                     }
 
-                    $condition = [];
-                    foreach ($value as $item) {
-                        $condition[] = $this->convertConditionFormat($item);
-                    }
-
+                    $condition           = $this->convertConditionsFormat($value);
                     $condition['_logic'] = 'or';
                     $map['_complex']     = $condition;
 
@@ -725,12 +699,8 @@ abstract class AbstractLogic
                     if (ArrayHelper::getDimensionCount($value) === 1) {
                         $value = [$value];
                     }
-                    //$query = $query->where($value);
-                    $condition = [];
-                    foreach ($value as $item) {
-                        $condition[] = $this->convertConditionFormat($item);
-                    }
 
+                    $condition           = $this->convertConditionsFormat($value);
                     $condition['_logic'] = 'and';
                     $map['_complex']     = $condition;
 
