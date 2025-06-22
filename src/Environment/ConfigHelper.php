@@ -28,11 +28,14 @@ class ConfigHelper
             // 获取项目根目录
             $root = EnvHelper::getPhysicalRootPath();
 
-            // 实例化 Dotenv 对象
-            $dotenv = Dotenv::createImmutable($root);
-            $dotenv->load(); // 加载 .env 文件中的变量到环境变量中
+            $env_file_path = $root . DIRECTORY_SEPARATOR . '.env';
+            if (file_exists($env_file_path)) {
+                // 实例化 Dotenv 对象
+                $dotenv = Dotenv::createImmutable($root);
+                $dotenv->load(); // 加载 .env 文件中的变量到环境变量中
 
-            self::$envLoaded = true;
+                self::$envLoaded = true;
+            }
         }
 
         return $_ENV[$key] ?? $default;
