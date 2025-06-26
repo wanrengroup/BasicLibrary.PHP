@@ -13,7 +13,7 @@
 
 ## 项目文件结构配置
 
-- 项目中使用的ThinkPHP目录，应该采用软连接的方式引入，而不是直接拷贝到项目目录下。具体操作：
+- 本项目中使用的ThinkPHP目录，采用软连接的方式引入，而不是直接拷贝到项目目录下。具体操作：
     - 在命令行模式中，进入本项目的根目录，
     - 执行命令：`mklink /D "ThinkPHP" "/path/to/TP32project/ThinkPHP"`，例如：
       `mklink /D "ThinkPHP" "D:\HOME\OpenSource\ThinkPHP3.2\ThinkPHP"`
@@ -27,6 +27,7 @@
 composer require wanren/basiclibrary.php:3.2.x-dev
 ```
 
+通过composer安装本项目后，会提示“你的项目目录\vendor/wanren/basiclibrary.php/ThinkPHP/Library”这个文件或者目录不存在，这是正常现象，不影响使用，因为本项目使用的ThinkPHP目录是软连接过来的。
 安装完成后，在代码中引入以下代码即可使用。
 
 ## 本项目更新的方式

@@ -128,4 +128,46 @@ class DateHelper
         $date_object = self::getDateTime($dateValue);
         return $date_object->format($format);
     }
+
+    /**
+     * 系统默认会读取php.ini中的date.timezone配置，如果没有配置，则会使用UTC时间。
+     * 该方法可以改写系统默认使用的时区（尤其是在无法修改php.ini的环境下使用）。
+     * @param string $timezone
+     * @return void
+     */
+    public static function setTimeZone(string $timezone = 'Asia/Shanghai'): void
+    {
+        // 1. 校验时区有效性
+        if (!in_array($timezone, timezone_identifiers_list(), false)) {
+            // 2. 熔断机制：使用UTC兜底
+            $timezone = "UTC";
+        }
+
+        // 3. 设置时区并添加日志
+        date_default_timezone_set($timezone);
+    }
+
+    /**
+     * 获取系统当前使用的时区字符串
+     * @return string
+     */
+    public static function getTimeZoneString(): string
+    {
+        return date_default_timezone_get();
+    }
+
+    /**
+     * 获取时区对象
+     * @return DateTimeZone
+     */
+    public static function getTimeZoneObject(): DateTimeZone
+    {
+        $zoneName = self::getTimeZoneString();
+
+        try {
+            return new DateTimeZone($zoneName);
+        } catch (Exception $e) {
+            return new DateTimeZone("UTC");
+        }
+    }
 }
