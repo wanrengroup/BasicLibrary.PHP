@@ -10,6 +10,7 @@
 
 namespace WanRen\WorkLayer;
 
+use Closure;
 use Think\Exception;
 use Think\Model;
 use WanRen\Data\ArrayHelper;
@@ -89,10 +90,10 @@ abstract class AbstractLogic
     }
 
     /**
-     * 获取模型对象(model有可能为null，使用的时候需要判断)
+     * 获取查询对象（在TP32中为Model；在ThinkORM中为BaseQuery。两者有相似的接口。）
      * @return mixed
      */
-    public function getModel(): Model
+    public function getQueryObject(): Model
     {
         return $this->model;
     }
@@ -137,6 +138,53 @@ abstract class AbstractLogic
 
         //3-> 创建模型对象
         $this->model = new Model($modelName, $prefix, $connection);
+    }
+
+    /**
+     * 在数据库事务保护下执行操作
+     * @param Closure $callback 在数据库事务保护下执行的回调函数，其参数为模型对象。
+     * @return mixed
+     */
+    public function transClosure(Closure $callback)
+    {
+        try {
+            //业务代码
+            $this->model->startTrans();
+            $result = $callback($this->model);
+            $this->model->commit();
+            return $result;
+        } catch (Exception $e) {
+            // 异常处理
+            LoggerHelper::error($e->getMessage(), $e->getTraceAsString());
+            $this->model->rollback();
+        }
+    }
+
+    /**
+     * 开启数据库事务
+     * @return void
+     */
+    public function transStart(): void
+    {
+        $this->model->startTrans();
+    }
+
+    /**
+     * 提交数据库事务
+     * @return void
+     */
+    public function transCommit(): void
+    {
+        $this->model->commit();
+    }
+
+    /**
+     * 回滚数据库事务
+     * @return void
+     */
+    public function transRollback(): void
+    {
+        $this->model->rollback();
     }
 
     /**
@@ -203,7 +251,7 @@ abstract class AbstractLogic
             $field = "*";
         }
 
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->count($field);
     }
@@ -216,7 +264,7 @@ abstract class AbstractLogic
      */
     public function getEntitySum(string $field = "", $where = []): float
     {
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->sum($field);
     }
@@ -229,7 +277,7 @@ abstract class AbstractLogic
      */
     public function getEntityAvg(string $field, $where = []): float
     {
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->avg($field);
     }
@@ -242,7 +290,7 @@ abstract class AbstractLogic
      */
     public function getEntityMax(string $field, $where = []): float
     {
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->max($field);
     }
@@ -255,7 +303,7 @@ abstract class AbstractLogic
      */
     public function getEntityMin(string $field, $where = []): float
     {
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->min($field);
     }
@@ -282,7 +330,7 @@ abstract class AbstractLogic
 
         //3-> 获取数据
         try {
-            $query = $this->getModel()->field($fields)->order($orderBy)->limit($limit);
+            $query = $this->model->field($fields)->order($orderBy)->limit($limit);
             $query = $this->prepareWhere($query, $where);
             return $query->select();
         } catch (Exception $e) {
@@ -420,7 +468,7 @@ abstract class AbstractLogic
     public function addEntities(array ...$dataList): int
     {
         //由于系统提供的批量添加方法addALL()，返回的结果不准确（返回的本次插入的第一条的主键值），所以这里自己实现批量添加
-        //return $this->getModel()->addAll($dataList);
+        //return $this->model->addAll($dataList);
 
         $rowCountEffected = 0;
         foreach ($dataList as $data) {
@@ -445,7 +493,7 @@ abstract class AbstractLogic
             return false;
         }
 
-        $query = $this->getModel();
+        $query = $this->model;
         $query = $this->prepareWhere($query, $where);
         return $query->delete();
     }

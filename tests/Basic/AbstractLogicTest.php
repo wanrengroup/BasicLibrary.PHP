@@ -464,4 +464,47 @@ class AbstractLogicTest extends LocalTestCase
         $expect = 5;
         self::assertEquals($expect, $actual);
     }
+
+    public function testTransactionClosure(): void
+    {
+        $logic = $this->logic;
+        $logic->transClosure(function () use ($logic) {
+            $actual_old = $logic->getEntityCount();
+            $this->_addEntities();
+
+            //// 这里抛出异常，模拟事务回滚
+            //throw new Exception("test transaction rollback");
+
+            $actual_new = $logic->getEntityCount();
+
+            $expect = $actual_old + 4;
+            self::assertEquals($expect, $actual_new);
+        });
+    }
+
+    public function testTransactionCommit(): void
+    {
+        $logic = $this->logic;
+        $logic->transStart();
+        $actual_old = $logic->getEntityCount();
+        $this->_addEntities();
+        $actual_new = $logic->getEntityCount();
+        $logic->transCommit();
+
+        $expect = $actual_old + 4;
+        self::assertEquals($expect, $actual_new);
+    }
+
+    public function testTransactionRollback(): void
+    {
+        $logic = $this->logic;
+        $logic->transStart();
+        $actual_old = $logic->getEntityCount();
+        $this->_addEntities();
+        $logic->transRollback();
+        $actual_new = $logic->getEntityCount();
+
+        $expect = $actual_old + 0;
+        self::assertEquals($expect, $actual_new);
+    }
 }

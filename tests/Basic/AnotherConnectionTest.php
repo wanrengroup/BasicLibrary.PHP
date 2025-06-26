@@ -29,7 +29,7 @@ class AnotherConnectionTest extends LocalTestCase
     {
         $expect = 5;
 
-        $list   = $this->logic->getModel()->select();
+        $list   = $this->logic->getQueryObject()->select();
         $actual = count($list);
         self::assertEquals($expect, $actual);
     }
