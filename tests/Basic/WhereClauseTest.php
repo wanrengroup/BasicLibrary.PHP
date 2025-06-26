@@ -37,7 +37,7 @@ class WhereClauseTest extends TestCase
 
     protected function setUp(): void
     {
-        DbAssert::initDb();
+        DbAsset::initDb();
         $this->logic = new GeneralLogic(self::$targetTable, true);
     }
 

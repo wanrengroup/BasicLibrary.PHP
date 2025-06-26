@@ -13,7 +13,7 @@ namespace WanRen\Test\Basic;
 use think\facade\Db;
 
 
-class DbAssert
+class DbAsset
 {
     public static function initDb(): void
     {

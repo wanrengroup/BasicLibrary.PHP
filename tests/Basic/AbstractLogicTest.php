@@ -11,6 +11,7 @@
 namespace WanRen\Test\Basic;
 
 use PHPUnit\Framework\TestCase;
+use think\Exception;
 use WanRen\WorkLayer\GeneralLogic;
 use WanRen\Data\RandHelper;
 
@@ -171,7 +172,7 @@ class AbstractLogicTest extends TestCase
 
     protected function setUp(): void
     {
-        DbAssert::initDb();
+        DbAsset::initDb();
         $this->logicIsolated = new GeneralLogic(self::$targetTable, true);
     }
 
@@ -524,30 +525,48 @@ class AbstractLogicTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
-    /**
-     * 测试 WhereOr条件
-     * @return void
-     */
-    //public function testWhereOr(): void
-    //{
-    //    $logic = $this->logicIsolated;
-    //
-    //    //1->清除所有数据
-    //    $where[] = ["id", ">", 0];
-    //    $logic->deleteEntities($where);
-    //
-    //    //2->添加测试数据
-    //    $this->_addEntities();
-    //
-    //    //3->测试WhereOr条件
-    //    $where["OR"] = [
-    //        ["mobile", "=", "12334567891"],
-    //        ["grade", "=", "3"],
-    //    ];
-    //    $actual      = $logic->getEntityCount($where);
-    //    $expect      = 4;
-    //    self::assertEquals($expect, $actual);
-    //}
+    public function testTransactionClosure(): void
+    {
+        $logic = $this->logicIsolated;
+        $logic->transClosure(function () use ($logic) {
+            $actual_old = $logic->getEntityCount();
+            $this->_addEntities();
+
+            //// 这里抛出异常，模拟事务回滚
+            //throw new Exception("test transaction rollback");
+
+            $actual_new = $logic->getEntityCount();
+
+            $expect = $actual_old + 4;
+            self::assertEquals($expect, $actual_new);
+        });
+    }
+
+    public function testTransactionCommit(): void
+    {
+        $logic = $this->logicIsolated;
+        $logic->transStart();
+        $actual_old = $logic->getEntityCount();
+        $this->_addEntities();
+        $actual_new = $logic->getEntityCount();
+        $logic->transCommit();
+
+        $expect = $actual_old + 4;
+        self::assertEquals($expect, $actual_new);
+    }
+
+    public function testTransactionRollback(): void
+    {
+        $logic = $this->logicIsolated;
+        $logic->transStart();
+        $actual_old = $logic->getEntityCount();
+        $this->_addEntities();
+        $logic->transRollback();
+        $actual_new = $logic->getEntityCount();
+
+        $expect = $actual_old + 0;
+        self::assertEquals($expect, $actual_new);
+    }
 
 
 }

@@ -12,7 +12,7 @@ namespace WanRen\Test\Data;
 
 use PHPUnit\Framework\TestCase;
 use WanRen\Data\WhereHelper;
-use WanRen\Test\Basic\DbAssert;
+use WanRen\Test\Basic\DbAsset;
 use WanRen\WorkLayer\GeneralLogic;
 
 // +--------------------------------------------------------------------------
@@ -40,7 +40,7 @@ class WhereHelperTest extends TestCase
 
     protected function setUp(): void
     {
-        DbAssert::initDb();
+        DbAsset::initDb();
         $this->logic = new GeneralLogic("where_helper_testing", true);
     }
 

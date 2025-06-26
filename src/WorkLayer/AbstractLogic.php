@@ -112,12 +112,12 @@ abstract class AbstractLogic
     }
 
     /**
-     * 获取模型对象(model有可能为null，使用的时候需要判断)
+     * 获取查询对象（在TP32中为Model；在ThinkORM中为BaseQuery。两者有相似的接口。）
      * @return mixed
      */
-    public function getModel(): Model
+    public function getQueryObject(): BaseQuery
     {
-        return $this->model;
+        return $this->baseQuery;
     }
 
     /**
@@ -173,6 +173,47 @@ abstract class AbstractLogic
     {
         // strict(false) 关闭严格模式。当跟数据库交互不存在的字段时，不会报错，其会被自动忽略。
         $this->baseQuery = $this->baseQuery->removeOption()->strict(false);
+    }
+
+    /**
+     * 在数据库事务保护下执行操作
+     * @param Closure $callback 在数据库事务保护下执行的回调函数
+     * @return mixed
+     */
+    public function transClosure(Closure $callback): mixed
+    {
+        /** @noinspection all */
+        return Db::transaction($callback);
+    }
+
+    /**
+     * 开启数据库事务
+     * @return void
+     */
+    public function transStart(): void
+    {
+        /** @noinspection all */
+        Db::startTrans();
+    }
+
+    /**
+     * 提交数据库事务
+     * @return void
+     */
+    public function transCommit(): void
+    {
+        /** @noinspection all */
+        Db::commit();
+    }
+
+    /**
+     * 回滚数据库事务
+     * @return void
+     */
+    public function transRollback(): void
+    {
+        /** @noinspection all */
+        Db::rollback();
     }
 
     /**
