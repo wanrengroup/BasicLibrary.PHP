@@ -11,6 +11,7 @@
 namespace Wanren\Web;
 
 use think\facade\Request;
+use WanRen\Data\JsonHelper;
 
 class RequestHelper
 {
@@ -38,4 +39,26 @@ class RequestHelper
     //{
     //    return Request::param($key) ?: $default;
     //}
+
+    /**
+     * 从获取请求参数的值，优先级：$_REQUEST > php://input > 默认值
+     * @param string $key
+     * @param string $default_value
+     * @return mixed|string
+     */
+    public function getParam(string $key, string $default_value = ""): mixed
+    {
+        $inputString = file_get_contents("php://input");
+        $inputArray  = JsonHelper::string2Array($inputString);
+
+        $value = $this->$_REQUEST[$key] ?? "";
+        if ($value === "") {
+            $value = $inputArray[$key] ?? "";
+        }
+
+        if ($value === "") {
+            $value = $default_value;
+        }
+        return $value;
+    }
 }
