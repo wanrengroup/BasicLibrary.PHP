@@ -80,10 +80,10 @@ class DateHelper
 
     private static function modifyDatePart($dateValue, string $modifier): DateTime
     {
-        $date_object       = self::getDateTime($dateValue);
-        $date_object_clone = clone $date_object;
-        $date_object_clone->modify($modifier);
-        return $date_object_clone;
+        $dateObject       = self::getDateTime($dateValue);
+        $dateObjectCloned = clone $dateObject;
+        $dateObjectCloned->modify($modifier);
+        return $dateObjectCloned;
     }
 
     /**

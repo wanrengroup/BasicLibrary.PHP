@@ -41,7 +41,7 @@ class JsonHelper
      * @param string $jsonString
      * @return array|null (如果转换失败，返回 null)
      */
-    public static function string2Array(string $jsonString)
+    public static function string2Array(string $jsonString): ?array
     {
         try {
             return json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR);
@@ -56,7 +56,7 @@ class JsonHelper
      * @param string $jsonString
      * @return object|null (如果转换失败，返回 null)
      */
-    public static function string2Object(string $jsonString)
+    public static function string2Object(string $jsonString): ?object
     {
         try {
             return json_decode($jsonString, false, 512, JSON_THROW_ON_ERROR);
