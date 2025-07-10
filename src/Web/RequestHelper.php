@@ -48,12 +48,11 @@ class RequestHelper
      */
     public function getParam(string $key, string $default_value = ""): mixed
     {
-        $inputString = file_get_contents("php://input");
-        $inputArray  = JsonHelper::string2Array($inputString);
-
         $value = $this->$_REQUEST[$key] ?? "";
         if ($value === "") {
-            $value = $inputArray[$key] ?? "";
+            $inputString = file_get_contents("php://input");
+            $inputArray  = JsonHelper::string2Array($inputString);
+            $value       = $inputArray[$key] ?? "";
         }
 
         if ($value === "") {
