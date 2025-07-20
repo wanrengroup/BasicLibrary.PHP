@@ -42,6 +42,7 @@ class RequestHelper
 
     /**
      * 从获取请求参数的值，优先级：$_REQUEST > php://input > 默认值
+     * （如果通过php://input方式获取参数，那么传递的参数必须是json格式）
      * @param string $key
      * @param string $default_value
      * @return mixed|string
