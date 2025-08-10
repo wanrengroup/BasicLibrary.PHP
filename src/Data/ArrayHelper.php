@@ -128,7 +128,7 @@ class ArrayHelper
      */
     public static function generateNameValueItems(array $sourceArray, string $columnNameAsName='name', string $columnNameAsValue='value', bool $insertBlankItem = true, string $blankName = '请选择...', string $blankValue = ''): array
     {
-        $allWorkLevelsFixed = [];
+        $targetItems = [];
 
         foreach ($sourceArray as $item) {
             $name  = $item[$columnNameAsName] ?? '';
@@ -139,13 +139,13 @@ class ArrayHelper
                 continue;
             }
 
-            $allWorkLevelsFixed[$value] = $name;
+            $targetItems[$value] = $name;
         }
 
         if ($insertBlankItem) {
-            $allWorkLevelsFixed = [$blankValue => $blankName] + $allWorkLevelsFixed;
+            $targetItems = [$blankValue => $blankName] + $targetItems;
         }
 
-        return $allWorkLevelsFixed;
+        return $targetItems;
     }
 }
