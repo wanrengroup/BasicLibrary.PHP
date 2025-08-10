@@ -16,6 +16,10 @@ use WanRen\Data\ArrayHelper;
 
 class ArrayHelperTest extends TestCase
 {
+    /**
+     * 从数组中获取指定键的值
+     * @return void
+     */
     public function testGet(): void
     {
         $original = ['a' => 1, 'b' => 2, 'c' => 3];
@@ -47,6 +51,10 @@ class ArrayHelperTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
+    /**
+     * 获取数组的维度数量
+     * @return void
+     */
     public function testGetDimensionCount(): void
     {
         $original = "hello world";
@@ -79,6 +87,10 @@ class ArrayHelperTest extends TestCase
         self::assertEquals($expect, $actual);
     }
 
+    /**
+     * 检查数组是否是索引数组
+     * @return void
+     */
     public function testIsIndexArray(): void
     {
         //空数组, 索引数组
@@ -127,6 +139,10 @@ class ArrayHelperTest extends TestCase
         self::assertFalse($actual);
     }
 
+    /**
+     * 检查数组是否是关联数组
+     * @return void
+     */
     public function testIsAssocArray(): void
     {
         //空数组, 不是关联数组
