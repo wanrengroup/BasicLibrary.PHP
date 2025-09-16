@@ -5,3 +5,5 @@ logs/
 /tests/.Manual/my_logs/
 /Application/Runtime/
 /Application/Runtime
+/ThinkPHP/
+!/ThinkPHP/.gitkeep
