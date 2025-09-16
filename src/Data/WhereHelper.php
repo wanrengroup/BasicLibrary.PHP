@@ -16,11 +16,23 @@ namespace WanRen\Data;
  */
 class WhereHelper
 {
+    /**
+     *
+     * @param string $fieldName
+     * @param $value
+     * @return array
+     */
     public static function Equal(string $fieldName, $value): array
     {
         return array($fieldName, "=", $value);
     }
 
+    /**
+     *
+     * @param string $fieldName
+     * @param $value
+     * @return array
+     */
     public static function NotEqual(string $fieldName, $value): array
     {
         return array($fieldName, "<>", $value);
