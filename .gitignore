@@ -7,3 +7,4 @@ logs/
 /Application/Runtime
 /ThinkPHP/
 !/ThinkPHP/.gitkeep
+!/ThinkPHP/Library/.gitkeep
